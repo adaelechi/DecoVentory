@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Resource - DecoVentory</title>
+    <link rel="stylesheet" href="addnewresourcepage.css">
+</head>
+<body>
+  <nav class="nav-bar">
+            <a href="../addNewResource/addNewResource.html" id="addResourceLink">
+                <button class="nav-item add-btn">
+                    <svg class="add-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    <span class="add-item">Add New Resource</span>
+                </button>
+            </a>
+            <div class="nav-item toggle-theme">
+                <span class="slider"></span>
+                <svg class="sun-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="moon-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+            </div>
+            <!-- <div class="nav-item user-profile center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-icon lucide-user-round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            </div> -->
+        </nav>
+      
+        
+
+    <div class="breadcrumb">
+        <a href="../Dashboard/index.html">Dashboard</a> / 
+        <span>Add New Resource</span>
+    </div>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Add New Resource</h1>
+            <p class="subtitle">Enter the essential details and upload a photo for the new resource.</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="left-section">
+                <div class="card">
+                    <h2 class="section-title">Type</h2>
+                    <div class="type-selector">
+                        <button class="type-btn active" data-type="fabric">Fabric</button>
+                        <button class="type-btn" data-type="tool">Tool</button>
+                        <button class="type-btn" data-type="other">Other</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">Resource Details</h2>
+                    <form id="resourceForm">
+                        <div class="form-group">
+                            <label for="resourceName">Resource Name</label>
+                            <input 
+                                type="text" 
+                                id="resourceName" 
+                                placeholder="e.g. Cordless Drill"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option value="electronics">Hammer</option>
+                                <option value="fabric">Fabric</option>
+                                <option value="tools">Tools</option>
+                                <option value="decorations">Decorations</option>
+                                <option value="lighting">Lighting</option>
+                                <option value="furniture">Furniture</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="colour">Colour</label>
+                                <input 
+                                    type="text" 
+                                    id="colour" 
+                                    placeholder="e.g. Red"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="size">Size</label>
+                                <input 
+                                    type="text" 
+                                    id="size" 
+                                    placeholder="e.g. 10mm"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input 
+                                    type="number" 
+                                    id="quantity" 
+                                    value="1"
+                                    min="0"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="right-section">
+                <div class="card">
+                    <h2 class="section-title">Resource Image</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📷</div>
+                        <p class="upload-title">Upload Picture</p>
+                        <p class="upload-subtitle">
+                            <span class="link">Click to browse</span> or drag here
+                        </p>
+                        <p class="upload-info">Supports: JPG, PNG, WEBP</p>
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            accept=".jpg,.jpeg,.png,.webp"
+                            hidden
+                        >
+                    </div>
+                    <div id="imagePreview" class="image-preview" style="display: none;">
+                        <img id="previewImg" src="" alt="Preview">
+                        <button class="remove-btn" id="removeImage">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-secondary" onclick="window.history.back()">Cancel</button>
+            <button class="btn-primary" id="addResourceBtn">Add Resource</button>
+        </div>
+    </main>
+
+    <script src="addNewResource.js"></script>
+</body>
+</html>

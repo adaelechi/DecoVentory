@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecoVentory - Dashboard</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <section class="sidebar">
+        <h2 class="center">DecoVentory</h2>
+        <ul class="sidebar_list">
+            <li>
+                <a href="">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#769ce9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard-icon lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    <span class="item-name">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#769ce9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive-icon lucide-archive"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/></svg>
+                    <span class="item-name">All Resources</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#769ce9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shapes-icon lucide-shapes"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg>
+                    <span class="item-name">Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#769ce9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-images-icon lucide-images"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="currentColor"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>
+                    <!-- <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#135bec"><path d="M17.409 19C16.633 16.6012 15.1323 15.1147 13.1434 13.3979C15.0238 11.8971 17.4071 11 20 11V3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934C2 3.44476 2.45531 3 2.9918 3H6V1H8V5H4V12C9.22015 12 13.6618 14.4616 15.3127 19H17.409ZM18 1V5H10V3H16V1H18ZM16.5 10C15.6716 10 15 9.32843 15 8.5C15 7.67157 15.6716 7 16.5 7C17.3284 7 18 7.67157 18 8.5C18 9.32843 17.3284 10 16.5 10Z"></path></svg> -->
+                    <span class="item-name">View Recent <br>Decorations</span>
+                </a>
+            </li>
+        </ul>
+        <div class="settings">
+            <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="item-name">Settings</span>
+        </div>
+    </section>
+
+    <main class="main">
+        <nav class="nav-bar">
+            <a href="../addNewResource/addNewResource.html" id="addResourceLink">
+                <button class="nav-item add-btn">
+                    <svg class="add-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    <span class="add-item">Add New Resource</span>
+                </button>
+            </a>
+            <div class="nav-item toggle-theme">
+                <span class="slider"></span>
+                <svg class="sun-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="moon-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+            </div>
+            <!-- <div class="nav-item user-profile center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-icon lucide-user-round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            </div> -->
+        </nav>
+        
+        <section class="main-section">
+            <h1>Resource Overview</h1>
+            <ul class="content-list">
+                <li class="content-list-item">
+                    <span class="item-state center grey-text">Total Resources</span>
+                    <span class="numbers center"></span>
+                </li>
+                <li class="content-list-item">
+                    <span class="item-state center grey-text">Items Available <br> &lpar;In-Store&rpar;</span>
+                    <span class="numbers center"></span>
+                </li>
+                <li class="content-list-item">
+                    <span class="item-state center grey-text">Items in Chapel</span>
+                    <span class="numbers center"></span>
+                </li>
+                <li class="content-list-item">
+                    <span class="item-state center grey-text">Items in Other Locations</span>
+                    <span class="numbers center"></span>
+                </li>
+                <li class="content-list-item">
+                    <span class="item-state center grey-text">Items Rented Out</span>
+                    <span class="numbers center"></span>
+                </li>
+            </ul>
+
+            <div class="filter-box">
+                <div class="search-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <select name="select-category" class="filter-select" id="category-select">
+                    <option value="All Categories">All Categories</option>
+                    <option value="Fabrics">Fabrics</option>
+                    <option value="Tools">Tools</option>
+                    <option value="Others">Others</option>
+                </select>
+                <select name="select-status" class="filter-select" id="status-select">
+                    <option value="All Types">All Types</option>
+                    <option value="Voile">Voile</option>
+                    <option value="Satin">Satin</option>
+                    <option value="Hand Tools">Hand Tools</option>
+                    <option value="Equipment">Equipment</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                </select>
+                <button class="apply-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="filter-icon"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    <span>Apply</span>
+                </button>
+                <button class="reset-btn">Reset</button>
+            </div>
+
+            <div class="resource-section">
+
+            </div>
+        </section>
+    </main>
+
+    <script src="./main.js"></script>
+</body>
+</html>
