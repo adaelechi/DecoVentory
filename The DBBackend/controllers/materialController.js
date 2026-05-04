@@ -37,7 +37,7 @@ exports.createMaterial = (req, res) => {
     condition: condition || 'Good',
     image_url: req.file ? `/uploads/${req.file.filename}` : null
   };
-
+ 
   Material.create(materialData, (err, result) => {
     if (err) {
       return res.status(500).json({ error: 'Failed to create material' });

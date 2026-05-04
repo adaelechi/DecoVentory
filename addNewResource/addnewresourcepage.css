@@ -14,23 +14,27 @@ body {
 
 /* Dashboard Navbar Styles */
 .nav-bar {
+    height: 3.5rem;
+    background-color: #fff;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 2rem;
-    background-color: #fff;
-    border-bottom: 1px solid #d0d0d0;
+    align-content: center;
+    padding: 0 2rem 0 2rem;
+    perspective: 500px;
 }
 
 .nav-item {
+    display: block;
     padding: 0.5rem;
     border-radius: 10px;
 }
 
 .add-btn {
+    height: 2.5rem;
+    width: 12rem;
     display: grid;
-    padding: 0.5rem 1.5rem;
+    /* padding: 0.5rem 1.5rem; */
     border-radius: 10px;
     grid-template-columns: 2rem 1fr;
     grid-template-rows: 1fr;
@@ -42,6 +46,24 @@ body {
     color: #fff;
     cursor: pointer;
     border: none;
+    /* align-content: center;
+    flex-wrap: wrap; */
+}
+
+.add-svg {
+    grid-column: 1/2;
+    grid-row: 1/2;
+    display: flex;
+    align-self: center;
+    justify-self: end;
+}
+
+.add-item {
+    grid-column: 2/3;
+    grid-row: 1/2;
+    display: flex;
+    align-self: center;
+    justify-self: start;
 }
 
 .add-btn:active {
@@ -125,7 +147,7 @@ body {
 }
 
 .nav-item {
-    display: inline-block;
+    /* display: inline-block; */
     margin-inline: 0.5rem;
 
 }
