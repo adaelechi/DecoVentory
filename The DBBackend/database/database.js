@@ -9,12 +9,13 @@ if (process.env.DATABASE_URL) {
   console.log('Using PostgreSQL database');
   isPostgres = true;
   
-  // Parse connection string to handle SSL parameters properly
+  // Force SSL unauthorized rejection to false for cloud databases
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL.includes('localhost') ? false : {
+    ssl: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeoutMillis: 5000 // 5 second timeout
   });
 
   // Wrapper to make pg behave like sqlite3 for the models
