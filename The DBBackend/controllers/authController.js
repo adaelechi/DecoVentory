@@ -13,10 +13,12 @@ exports.login = async (req, res) => {
     // Get all active admins
     Admin.getAllActive(async (err, admins) => {
       if (err) {
+        console.error('Database error fetching admins:', err);
         return res.status(500).json({ error: 'Server error' });
       }
 
       if (!admins || admins.length === 0) {
+        console.warn('Login attempt failed: No active admins found in database');
         return res.status(404).json({ error: 'No active users found' });
       }
 

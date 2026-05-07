@@ -2,7 +2,13 @@ const { db } = require('../database/database');
 
 class Admin {
   static getAllActive(callback) {
-    db.all('SELECT * FROM admins WHERE active = 1', callback);
+    // In Postgres, active is BOOLEAN (true/false), in SQLite it's INTEGER (1/0)
+    // Using a comparison that works for both or checking db type
+    const { isPostgres } = require('../database/database');
+    const sql = isPostgres 
+      ? 'SELECT * FROM admins WHERE active = true' 
+      : 'SELECT * FROM admins WHERE active = 1';
+    db.all(sql, callback);
   }
 
   static updatePasscode(id, passcode_hash, callback) {
