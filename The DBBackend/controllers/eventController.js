@@ -12,7 +12,8 @@ exports.getAllEvents = (req, res) => {
       ...event,
       materials_used: JSON.parse(event.materials_used),
       lost_items: event.lost_items ? JSON.parse(event.lost_items) : [],
-      damaged_items: event.damaged_items ? JSON.parse(event.damaged_items) : []
+      damaged_items: event.damaged_items ? JSON.parse(event.damaged_items) : [],
+      images: event.images ? JSON.parse(event.images) : []
     }));
     
     res.json(parsedEvents);
@@ -32,23 +33,32 @@ exports.getEventById = (req, res) => {
       ...event,
       materials_used: JSON.parse(event.materials_used),
       lost_items: event.lost_items ? JSON.parse(event.lost_items) : [],
-      damaged_items: event.damaged_items ? JSON.parse(event.damaged_items) : []
+      damaged_items: event.damaged_items ? JSON.parse(event.damaged_items) : [],
+      images: event.images ? JSON.parse(event.images) : []
     });
   });
 };
 
 exports.createEvent = (req, res) => {
-  const { event_name, venue, event_date, materials_used } = req.body;
+  const { event_name, venue, event_date, materials_used, instagram_link, notes } = req.body;
+  const files = req.files || [];
+  
+  const images = files.map(file => `/uploads/decorations/${file.filename}`);
 
   if (!event_name || !venue || !event_date || !materials_used) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
+  const parsedMaterials = typeof materials_used === 'string' ? JSON.parse(materials_used) : materials_used;
+
   const eventData = {
     event_name,
     venue,
     event_date,
-    materials_used
+    materials_used: parsedMaterials,
+    images,
+    instagram_link,
+    notes
   };
 
   EventDecoration.create(eventData, (err, result) => {
@@ -58,7 +68,15 @@ exports.createEvent = (req, res) => {
 
     // Reduce available quantities and log activities
     let completed = 0;
-    materials_used.forEach(item => {
+    if (!parsedMaterials || parsedMaterials.length === 0) {
+      return res.status(201).json({
+        success: true,
+        id: result.id,
+        message: 'Event created'
+      });
+    }
+
+    parsedMaterials.forEach(item => {
       Material.getById(item.material_id, (err, material) => {
         if (!err && material) {
           const newAvailable = material.available_quantity - item.quantity;
@@ -75,7 +93,7 @@ exports.createEvent = (req, res) => {
         }
         
         completed++;
-        if (completed === materials_used.length) {
+        if (completed === parsedMaterials.length) {
           res.status(201).json({
             success: true,
             id: result.id,

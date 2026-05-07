@@ -1,0 +1,328 @@
+/* Inherits from Dashboard/style.css */
+
+.rent-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    height: calc(100vh - 180px); /* Fill remaining height */
+}
+
+@media (max-width: 1024px) {
+    .rent-container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+}
+
+.selection-panel {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+.selection-panel h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.inventory-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    transition: all 0.2s;
+}
+
+.inventory-card:hover {
+    border-color: #135bec;
+}
+
+.item-info h4 {
+    font-size: 0.95rem;
+    margin: 0 0 0.2rem 0;
+    color: var(--text-primary);
+}
+
+.item-info .price {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0 0 0.2rem 0;
+}
+
+.item-info .size {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.2rem 0;
+}
+
+.item-info .stock {
+    font-size: 0.75rem;
+    color: #C54344;
+    font-weight: bold;
+}
+
+.item-info .stock.out-of-stock {
+    color: #e53935;
+}
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.qty-btn {
+    width: 30px;
+    height: 30px;
+    background: var(--bg-secondary);
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.qty-btn:hover:not(:disabled) {
+    background: #e0e0e0;
+}
+
+.qty-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.qty-input {
+    width: 40px;
+    height: 30px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    -moz-appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.event-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-group input {
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #135bec;
+    box-shadow: 0 0 0 2px rgba(19, 91, 236, 0.2);
+}
+
+/* Quote Preview Panel */
+.quote-preview-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quote-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.quote-header-actions h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #C54344;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #A53233;
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--border-color);
+}
+
+.btn-primary:disabled, .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Quote Document styling mimicking a letter */
+.quote-document {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    color: #000;
+    font-family: "Times New Roman", Times, serif;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 11pt;
+    line-height: 1.5;
+}
+
+/* For html2pdf.js it's better to ensure no scroll on the content itself during generation */
+.quote-document.pdf-generating {
+    overflow: visible;
+    height: auto;
+}
+
+.quote-doc-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.quote-doc-header .doc-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 0.5rem;
+}
+
+.quote-doc-header h2 {
+    margin: 0;
+    font-size: 16pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.quote-document hr {
+    border: none;
+    border-top: 2px solid #000;
+    margin-bottom: 1.5rem;
+}
+
+.doc-meta {
+    margin: 0.2rem 0;
+}
+
+.doc-body {
+    margin-top: 2rem;
+}
+
+.doc-body p {
+    margin-bottom: 1rem;
+}
+
+.highlight-field {
+    font-weight: bold;
+    color: #135bec;
+    background: rgba(19, 91, 236, 0.1);
+    padding: 0 4px;
+    border-radius: 2px;
+}
+
+.quote-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 10.5pt;
+}
+
+.quote-table th, .quote-table td {
+    border: 1px solid #000;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.quote-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+.quote-table th:last-child, .quote-table td:last-child {
+    text-align: right;
+}
+
+.quote-table td:nth-child(3) {
+    text-align: center;
+}
+
+.quote-table tfoot th {
+    background: #eaeaea;
+}
+
+.quote-table tfoot th:last-child {
+    text-align: right;
+}
+
+/* Dark mode overrides (Cleaned up as variables handle most things) */
+body.dark-mode .selection-panel {
+    border-color: var(--border-color);
+}
+
+body.dark-mode .inventory-card:hover {
+    border-color: var(--deco-red);
+}
+
+/* Note: Quote document stays white in dark mode for PDF accuracy */

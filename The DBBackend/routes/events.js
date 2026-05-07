@@ -8,7 +8,21 @@ router.get('/', eventController.getAllEvents);
 router.get('/:id', eventController.getEventById);
 
 // Protected routes
-router.post('/', authMiddleware, eventController.createEvent);
+const multer = require('multer');
+const path = require('path');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../uploads/decorations'));
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const uploadDecorations = multer({ storage });
+
+// Protected routes
+router.post('/', authMiddleware, uploadDecorations.array('images', 10), eventController.createEvent);
 router.put('/:id/return', authMiddleware, eventController.markEventReturned);
 router.delete('/:id', authMiddleware, eventController.deleteEvent);
 

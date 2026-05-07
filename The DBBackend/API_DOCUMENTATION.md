@@ -57,6 +57,7 @@ Response:
     "total_quantity": 50,
     "available_quantity": 45,
     "condition": "Good",
+    "location": "office store",
     "created_at": "2026-01-07 10:00:00",
     "updated_at": "2026-01-07 10:00:00"
   }
@@ -81,7 +82,8 @@ Request body:
   "category": "Fabrics",
   "total_quantity": 100,
   "available_quantity": 100,
-  "condition": "Good"
+  "condition": "Good",
+  "location": "office store"
 }
 ```
 
@@ -95,7 +97,8 @@ Request body:
   "category": "Fabrics",
   "total_quantity": 100,
   "available_quantity": 90,
-  "condition": "Good"
+  "condition": "Good",
+  "location": "Chapel"
 }
 ```
 

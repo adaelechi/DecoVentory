@@ -97,7 +97,14 @@ const API = {
 // Check authentication on protected pages
 function checkAuth() {
   if (!isAuthenticated()) {
-    alert('Please login first');
-    window.location.href = '../ExecLogin/index.html';
+    if (window.showToast) {
+      showToast.error('Please login first');
+      setTimeout(() => {
+        window.location.href = '../ExecLogin/index.html';
+      }, 1500);
+    } else {
+      alert('Please login first');
+      window.location.href = '../ExecLogin/index.html';
+    }
   }
 }

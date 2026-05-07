@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add New Resource - DecoVentory</title>
+    <link rel="icon" type="image/jpeg" href="../assets/logo.jpeg">
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="../assets/toast.css">
+    <link rel="stylesheet" href="../Dashboard/style.css">
     <link rel="stylesheet" href="addnewresourcepage.css">
 </head>
 <body>
     <nav class="nav-bar">
-        <a href="../addNewResource/addNewResource.html" id="addResourceLink">
+        <div class="brand">
+            <img src="../assets/logo.jpeg" alt="DecoVentory logo" class="brand-logo">
+            <h2>DecoVentory</h2>
+        </div>
+
+        <div class="nav-actions">
+        <a href="../addNewResource/addNewResource.html" id="addResourceLink" style="background: rgba(197, 67, 68, 0.1); border-radius: 10px;">
             <button class="nav-item add-btn">
                 <svg class="add-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 <span class="add-item">Add New Resource</span>
@@ -19,123 +29,175 @@
             <svg class="sun-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
             <svg class="moon-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
         </div>
-        <!-- <div class="nav-item user-profile center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-icon lucide-user-round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-        </div> -->
+        </div>
     </nav>
-      
-    <div class="breadcrumb">
-        <a href="../Dashboard/index.html">Dashboard</a> / 
-        <span>Add New Resource</span>
-    </div>
+    <main>
+        <section class="sidebar">
+            <ul class="sidebar_list">
+                <li>
+                    <a href="../Dashboard/index.html">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard-icon lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span class="item-name">Dashboard</span>
+                    </a>
+                </li>
 
-    <main class="container">
-        <div class="page-header">
-            <h1>Add New Resource</h1>
-            <p class="subtitle">Enter the essential details and upload a photo for the new resource.</p>
-        </div>
-
-        <div class="content-grid">
-            <div class="left-section">
-                <div class="card">
-                    <h2 class="section-title">Type</h2>
-                    <div class="type-selector">
-                        <button class="type-btn active" data-type="fabric">Fabric</button>
-                        <button class="type-btn" data-type="tool">Tool</button>
-                        <button class="type-btn" data-type="other">Other</button>
-                    </div>
+                <li>
+                    <a href="../RentMaterials/index.html">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shapes-icon lucide-shapes"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg>
+                        <span class="item-name">Rent Materials</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../RecentDecorations/index.html">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-images-icon lucide-images"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="currentColor"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>
+                        <span class="item-name">View Recent <br>Decorations</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="settings admin-link" style="cursor: pointer;">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span class="item-name">Admin</span>
                 </div>
-
-                <div class="card">
-                    <h2 class="section-title">Resource Details</h2>
-                    <form id="resourceForm">
-                        <div class="form-group">
-                            <label for="resourceName">Resource Name</label>
-                            <input 
-                                type="text" 
-                                id="resourceName" 
-                                placeholder="e.g. Cordless Drill"
-                                required
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="category">Category</label>
-                            <select id="category" required>
-                                <option value="electronics">Hammer</option>
-                                <option value="fabric">Fabric</option>
-                                <option value="tools">Tools</option>
-                                <option value="decorations">Decorations</option>
-                                <option value="lighting">Lighting</option>
-                                <option value="furniture">Furniture</option>
-                            </select>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="colour">Colour</label>
-                                <input 
-                                    type="text" 
-                                    id="colour" 
-                                    placeholder="e.g. Red"
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label for="size">Size</label>
-                                <input 
-                                    type="text" 
-                                    id="size" 
-                                    placeholder="e.g. 10mm"
-                                >
-                            </div>
-
-                            <div class="form-group">
-                                <label for="quantity">Quantity</label>
-                                <input 
-                                    type="number" 
-                                    id="quantity" 
-                                    value="1"
-                                    min="0"
-                                    required
-                                >
-                            </div>
-                        </div>
-                    </form>
+                <div id="logoutBtn" class="logout-link" style="cursor: pointer;">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span class="item-name" style="color: #C54344;">Logout</span>
                 </div>
             </div>
+        </section>
 
-            <div class="right-section">
-                <div class="card">
-                    <h2 class="section-title">Resource Image</h2>
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon">📷</div>
-                        <p class="upload-title">Upload Picture</p>
-                        <p class="upload-subtitle">
-                            <span class="link">Click to browse</span> or drag here
-                        </p>
-                        <p class="upload-info">Supports: JPG, PNG, WEBP</p>
-                        <input 
-                            type="file" 
-                            id="fileInput" 
-                            accept=".jpg,.jpeg,.png,.webp"
-                            hidden
-                        >
+        <section class="mainbar">
+            <div class="breadcrumb">
+                <a href="../Dashboard/index.html">Dashboard</a> / 
+                <span>Add New Resource</span>
+            </div>
+
+            <div class="container">
+                <div class="page-header">
+                    <h1>Add New Resource</h1>
+                    <p class="subtitle">Enter the essential details and upload a photo for the new resource.</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="left-section">
+                        <div class="card">
+                            <h2 class="section-title">Type</h2>
+                            <div class="type-selector">
+                                <button class="type-btn active" data-type="fabric">Fabric</button>
+                                <button class="type-btn" data-type="tool">Tool</button>
+                                <button class="type-btn" data-type="other">Other</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2 class="section-title">Resource Details</h2>
+                            <form id="resourceForm">
+                                <div class="form-group">
+                                    <label for="resourceName">Resource Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="resourceName" 
+                                        placeholder="e.g. Cordless Drill"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select id="category" required>
+                                        <option value="electronics">Hammer</option>
+                                        <option value="fabric">Fabric</option>
+                                        <option value="tools">Tools</option>
+                                        <option value="decorations">Decorations</option>
+                                        <option value="lighting">Lighting</option>
+                                        <option value="furniture">Furniture</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" id="locationsContainer">
+                                    <label>Locations & Quantities</label>
+                                    <div class="location-entry">
+                                        <select class="location-select" required style="flex: 2;">
+                                            <option value="office store" selected>Office Store</option>
+                                            <option value="chapel">Chapel</option>
+                                            <option value="rented out">Rented Out</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                        <input type="text" class="custom-location-input" placeholder="Custom location" style="display: none; flex: 2;">
+                                        <input type="number" class="location-quantity" placeholder="Qty" value="1" min="1" required style="flex: 1;">
+                                        <button type="button" class="remove-location-btn btn-secondary" style="display: none; padding: 0 10px;">✕</button>
+                                    </div>
+                                </div>
+                                <button type="button" id="addLocationBtn" class="btn-secondary" style="margin-bottom: 15px; font-size: 0.9em; padding: 5px 10px;">+ Add Location</button>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="colour">Colour</label>
+                                        <input 
+                                            type="text" 
+                                            id="colour" 
+                                            placeholder="e.g. Red"
+                                        >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="size">Size</label>
+                                        <input 
+                                            type="text" 
+                                            id="size" 
+                                            placeholder="e.g. 10mm"
+                                        >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="quantity">Total Quantity</label>
+                                        <input 
+                                            type="number" 
+                                            id="quantity" 
+                                            value="1"
+                                            readonly
+                                            style="background-color: #f5f5f5; cursor: not-allowed;"
+                                        >
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div id="imagePreview" class="image-preview" style="display: none;">
-                        <img id="previewImg" src="" alt="Preview">
-                        <button class="remove-btn" id="removeImage">✕</button>
+
+                    <div class="right-section">
+                        <div class="card">
+                            <h2 class="section-title">Resource Image</h2>
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-icon">📷</div>
+                                <p class="upload-title">Upload Picture</p>
+                                <p class="upload-subtitle">
+                                    <span class="link">Click to browse</span> or drag here
+                                </p>
+                                <p class="upload-info">Supports: JPG, PNG, WEBP</p>
+                                <input 
+                                    type="file" 
+                                    id="fileInput" 
+                                    accept=".jpg,.jpeg,.png,.webp"
+                                    hidden
+                                >
+                            </div>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview">
+                                <button class="remove-btn" id="removeImage">✕</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="form-actions">
-            <button class="btn-secondary" onclick="window.history.back()">Cancel</button>
-            <button class="btn-primary" id="addResourceBtn">Add Resource</button>
-        </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="window.history.back()">Cancel</button>
+                    <button class="btn-primary" id="addResourceBtn">Add Resource</button>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <script src="../assets/toast.js"></script>
     <script src="addNewResource.js"></script>
 </body>
 </html>

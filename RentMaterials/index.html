@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecoVentory - Rent Materials</title>
+    <link rel="icon" type="image/jpeg" href="../assets/logo.jpeg">
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="../assets/toast.css">
+    <link rel="stylesheet" href="../Dashboard/style.css"> <!-- Reusing dashboard layout styles -->
+    <link rel="stylesheet" href="./style.css">
+    <!-- Using html2pdf.js for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="nav-bar">
+            <div class="brand">
+                <img src="../assets/logo.jpeg" alt="DecoVentory logo" class="brand-logo">
+                <h2>DecoVentory</h2>
+            </div>
+            <div class="nav-actions">
+                <div class="nav-item toggle-theme">
+                    <span class="slider"></span>
+                    <svg class="sun-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    <svg class="moon-theme" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-icon lucide-moon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="sidebar">
+            <ul class="sidebar_list">
+                <li>
+                    <a href="../Dashboard/index.html">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard-icon lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span class="item-name">Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" style="background: rgba(118, 156, 233, 0.1); border-radius: 8px;">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shapes-icon lucide-shapes"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg>
+                        <span class="item-name" style="color: #135bec;">Rent Materials</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="../RecentDecorations/index.html">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-images-icon lucide-images"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="currentColor"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>
+                        <span class="item-name">View Recent <br>Decorations</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="settings admin-link" style="cursor: pointer;">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span class="item-name">Admin</span>
+                </div>
+                <div id="logoutBtn" class="logout-link" style="cursor: pointer;">
+                    <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span class="item-name" style="color: #C54344;">Logout</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="mainbar">
+            <section class="main-section">
+                <h1>Rent Materials & Quotation Builder</h1>
+                <p class="subtitle">Select the items you need to generate an instant quotation.</p>
+
+                <div class="rent-container">
+                    <!-- Left Side: Selection Form -->
+                    <div class="selection-panel">
+                        <h3>Available Inventory</h3>
+                        <form id="quote-form">
+                            <div class="form-grid" id="inventory-list">
+                                <!-- Inventory items will be loaded here dynamically -->
+                                <p>Loading available inventory...</p>
+                            </div>
+
+                            <h3 class="mt-4">Services & Tools</h3>
+                            <div class="form-grid">
+                                <div class="inventory-card">
+                                    <div class="item-info">
+                                        <h4>Workmanship (persons)</h4>
+                                        <p class="price">₦3,000.00 / person</p>
+                                    </div>
+                                    <div class="item-controls">
+                                        <button type="button" class="qty-btn minus" data-type="service" data-id="workmanship">-</button>
+                                        <input type="number" class="qty-input" data-type="service" data-id="workmanship" value="0" min="0" data-price="3000" data-name="Workmanship (persons)">
+                                        <button type="button" class="qty-btn plus" data-type="service" data-id="workmanship">+</button>
+                                    </div>
+                                </div>
+                                <div class="inventory-card">
+                                    <div class="item-info">
+                                        <h4>Tools (scissors, nails, etc.)</h4>
+                                        <p class="price">₦2,500.00 / set</p>
+                                    </div>
+                                    <div class="item-controls">
+                                        <button type="button" class="qty-btn minus" data-type="service" data-id="tools">-</button>
+                                        <input type="number" class="qty-input" data-type="service" data-id="tools" value="0" min="0" data-price="2500" data-name="Tools (scissors, nails, hammer, pins)">
+                                        <button type="button" class="qty-btn plus" data-type="service" data-id="tools">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="mt-4">Event Details</h3>
+                            <div class="event-details-form">
+                                <div class="form-group">
+                                    <label for="recipient-name">Recipient Name / Client</label>
+                                    <input type="text" id="recipient-name" placeholder="E.g. John Doe" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="event-location">Event Location</label>
+                                    <input type="text" id="event-location" placeholder="E.g. Main Chapel" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="event-date">Event Date</label>
+                                    <input type="date" id="event-date" required>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Right Side: Live Quotation Preview -->
+                    <div class="quote-preview-panel">
+                        <div class="quote-header-actions">
+                            <h3>Live Quotation Preview</h3>
+                            <button id="download-pdf-btn" class="btn-primary" disabled>Download PDF</button>
+                            <button id="submit-request-btn" class="btn-secondary" disabled>Submit Request</button>
+                        </div>
+                        
+                        <div id="pdf-content" class="quote-document">
+                            <div class="quote-doc-header">
+                                <img src="../assets/logo.jpeg" alt="Logo" class="doc-logo">
+                                <h2>DECORATION UNIT</h2>
+                            </div>
+                            <hr>
+                            <p class="doc-meta"><strong>FROM:</strong> DECORATION UNIT</p>
+                            <p class="doc-meta"><strong>SUBJECT:</strong> QUOTATION FOR THE DECORATION OF <span id="doc-location" class="highlight-field">[LOCATION]</span></p>
+                            <p class="doc-meta"><strong>DATE:</strong> <span id="doc-date">...</span></p>
+                            
+                            <div class="doc-body">
+                                <p>Good day <span id="doc-recipient" class="highlight-field">[recipient]</span>,</p>
+                                <p>Covenant highway greetings.</p>
+                                <p>Decoration Unit humbly writes this letter in response to the inquiry made on the cost of decorating the specified venue.</p>
+                                <p>Please do kindly find a quotation with the appropriate breakdown as stated below:</p>
+
+                                <table class="quote-table">
+                                    <thead>
+                                        <tr>
+                                            <th>S/N</th>
+                                            <th>MATERIAL/ITEM</th>
+                                            <th>QUANTITY</th>
+                                            <th>COST (₦)</th>
+                                            <th>TOTAL (₦)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="quote-table-body">
+                                        <!-- Items injected here -->
+                                        <tr><td colspan="5" style="text-align: center;">No items selected yet.</td></tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4" style="text-align: right;">SUBTOTAL</th>
+                                            <th id="quote-subtotal">₦0.00</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <p>The table above consists of information concerning the materials, workforce and tools required for optimal and timely delivery of the required work. Also, the cost in the above table is as seen in our price list following the Decoration Unit’s policy on the renting of the materials above stated.</p>
+                                <p>To that end, the costs (prices) are fixed but the quantities are negotiable. However, this quotation contains the requirement for optimal delivery and the Decoration Unit will not be held liable for any setbacks experienced due to the compromise on the quantity.</p>
+                                <p>We hope to get a positive response from you soon.</p>
+                                <p>Thank you.</p>
+                                <p>God bless you <span id="doc-recipient-bottom" class="highlight-field">[recipient]</span>.</p>
+                                <br>
+                                <p>Yours faithfully,</p>
+                                <p><strong>Assistant Head 2</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+    <script src="../assets/toast.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -20,23 +20,25 @@ const initializeDatabase = async () => {
 
     console.log('✅ Database schema created successfully');
 
-    // Check if admin already exists
-    const adminExists = await new Promise((resolve, reject) => {
-      db.get('SELECT id FROM admins WHERE active = 1', (err, row) => {
+    // Check if users already exist
+    const adminsCount = await new Promise((resolve, reject) => {
+      db.get('SELECT COUNT(*) as count FROM admins', (err, row) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(row.count);
       });
     });
 
-    const defaultPasscode = process.env.DEFAULT_PASSCODE || '200026';
-    const hashedPasscode = await bcrypt.hash(defaultPasscode, 10);
+    const execPasscode = process.env.DEFAULT_PASSCODE || '200026';
+    const adminPasscode = process.env.ADMIN_PASSCODE || '111111';
+    const hashedExecPasscode = await bcrypt.hash(execPasscode, 10);
+    const hashedAdminPasscode = await bcrypt.hash(adminPasscode, 10);
 
-    if (!adminExists) {
-      // Create default admin with hashed passcode
+    if (adminsCount === 0) {
+      // Create default executive and admin with hashed passcodes
       await new Promise((resolve, reject) => {
         db.run(
-          'INSERT INTO admins (passcode_hash, active) VALUES (?, 1)',
-          [hashedPasscode],
+          "INSERT INTO admins (passcode_hash, role, active) VALUES (?, 'executive', 1), (?, 'admin', 1)",
+          [hashedExecPasscode, hashedAdminPasscode],
           (err) => {
             if (err) reject(err);
             else resolve();
@@ -44,22 +46,32 @@ const initializeDatabase = async () => {
         );
       });
 
-      console.log('✅ Default admin passcode created');
-      console.log(`   Use passcode: ${defaultPasscode}`);
+      console.log('✅ Default executive and admin passcodes created');
+      console.log(`   Use executive passcode: ${execPasscode}`);
+      console.log(`   Use admin passcode: ${adminPasscode}`);
     } else {
-      // Update existing admin passcode
-      await new Promise((resolve, reject) => {
-        db.run(
-          'UPDATE admins SET passcode_hash = ? WHERE active = 1',
-          [hashedPasscode],
-          (err) => {
-            if (err) reject(err);
-            else resolve();
-          }
-        );
+      // For existing DBs, ensure we have an admin role
+      const adminExists = await new Promise((resolve, reject) => {
+        db.get("SELECT id FROM admins WHERE role = 'admin'", (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        });
       });
-      console.log('✅ Admin passcode updated');
-      console.log(`   Use passcode: ${defaultPasscode}`);
+
+      if (!adminExists) {
+        await new Promise((resolve, reject) => {
+          db.run(
+            "INSERT INTO admins (passcode_hash, role, active) VALUES (?, 'admin', 1)",
+            [hashedAdminPasscode],
+            (err) => {
+              if (err) reject(err);
+              else resolve();
+            }
+          );
+        });
+        console.log('✅ Admin passcode added to existing database');
+        console.log(`   Use admin passcode: ${adminPasscode}`);
+      }
     }
 
     // Add some sample data (optional)
@@ -105,8 +117,42 @@ const initializeDatabase = async () => {
   }
 };
 
+const runMigrations = async () => {
+  const hasLocationColumn = await new Promise((resolve, reject) => {
+    db.all('PRAGMA table_info(materials)', (err, columns) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(columns.some((column) => column.name === 'location'));
+    });
+  });
+
+  if (!hasLocationColumn) {
+    await new Promise((resolve, reject) => {
+      db.run("ALTER TABLE materials ADD COLUMN location TEXT DEFAULT 'office store'", (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve();
+      });
+    });
+
+    console.log('✅ materials.location migration applied');
+  }
+};
+
 // Load environment variables
 require('dotenv').config();
 
-// Run initialization
-initializeDatabase();
+if (require.main === module) {
+  initializeDatabase();
+}
+
+module.exports = {
+  initializeDatabase,
+  runMigrations
+};

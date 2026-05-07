@@ -10,11 +10,11 @@ class EventDecoration {
   }
 
   static create(data, callback) {
-    const { event_name, venue, event_date, materials_used, notes } = data;
+    const { event_name, venue, event_date, materials_used, images, instagram_link, notes } = data;
     db.run(
-      `INSERT INTO event_decorations (event_name, venue, event_date, materials_used, returned) 
-       VALUES (?, ?, ?, ?, 0)`,
-      [event_name, venue, event_date, JSON.stringify(materials_used)],
+      `INSERT INTO event_decorations (event_name, venue, event_date, materials_used, returned, images, instagram_link, notes) 
+       VALUES (?, ?, ?, ?, 0, ?, ?, ?)`,
+      [event_name, venue, event_date, JSON.stringify(materials_used), JSON.stringify(images || []), instagram_link, notes],
       function (err) {
         callback(err, { id: this.lastID });
       }
@@ -32,12 +32,12 @@ class EventDecoration {
   }
 
   static update(id, data, callback) {
-    const { event_name, venue, event_date, materials_used } = data;
+    const { event_name, venue, event_date, materials_used, images, instagram_link, notes } = data;
     db.run(
       `UPDATE event_decorations 
-       SET event_name = ?, venue = ?, event_date = ?, materials_used = ?
+       SET event_name = ?, venue = ?, event_date = ?, materials_used = ?, images = ?, instagram_link = ?, notes = ?
        WHERE id = ?`,
-      [event_name, venue, event_date, JSON.stringify(materials_used), id],
+      [event_name, venue, event_date, JSON.stringify(materials_used), JSON.stringify(images || []), instagram_link, notes, id],
       callback
     );
   }

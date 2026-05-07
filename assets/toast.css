@@ -1,0 +1,104 @@
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column-reverse; /* Newest on top if stacking from bottom */
+    gap: 8px;
+}
+
+.toast {
+    min-width: 240px;
+    max-width: 320px;
+    background-color: var(--card-bg);
+    border-left: 4px solid var(--deco-red);
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--deco-red);
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast-content {
+    flex-grow: 1;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.toast-message {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--deco-red-muted);
+    color: var(--deco-red);
+}
+
+.toast-close {
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close:hover {
+    color: #333;
+}
+
+/* Specific Types */
+.toast-success {
+    border-left-color: #28a745;
+}
+.toast-success .toast-icon {
+    background-color: #e8f5e9;
+    color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #C54344;
+}
+.toast-error .toast-icon {
+    background-color: #FCE8E8;
+    color: #C54344;
+}
+
+.toast-info {
+    border-left-color: #769ce9;
+}
+.toast-info .toast-icon {
+    background-color: #eef3fd;
+    color: #769ce9;
+}
+
+/* Dark Mode Support Removed as variables handle it */

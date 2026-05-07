@@ -6,8 +6,22 @@ CREATE TABLE IF NOT EXISTS materials (
     total_quantity INTEGER NOT NULL DEFAULT 0,
     available_quantity INTEGER NOT NULL DEFAULT 0,
     condition TEXT DEFAULT 'Good',
+    location TEXT DEFAULT 'office store',
+    size TEXT,
+    colour TEXT,
+    image_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 1b. Material Locations Table (1-to-Many inventory tracking)
+CREATE TABLE IF NOT EXISTS material_locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_id INTEGER NOT NULL,
+    location_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
 );
 
 -- 2. Chapel Logs Table
@@ -30,6 +44,9 @@ CREATE TABLE IF NOT EXISTS event_decorations (
     returned BOOLEAN DEFAULT 0,
     lost_items TEXT,
     damaged_items TEXT,
+    images TEXT, -- Stored as JSON array of URLs
+    instagram_link TEXT,
+    notes TEXT, -- This will serve as the project caption
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -62,6 +79,7 @@ CREATE TABLE IF NOT EXISTS external_borrow_items (
 CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     passcode_hash TEXT NOT NULL,
+    role TEXT DEFAULT 'executive',
     active BOOLEAN DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -85,3 +103,17 @@ CREATE INDEX IF NOT EXISTS idx_event_decorations_date ON event_decorations(event
 CREATE INDEX IF NOT EXISTS idx_external_borrowers_returned ON external_borrowers(returned);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_material ON activity_logs(material_id);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_type ON activity_logs(action_type);
+CREATE INDEX IF NOT EXISTS idx_material_locations_material ON material_locations(material_id);
+
+-- 8. Quote Requests Table
+CREATE TABLE IF NOT EXISTS quote_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    recipient_name TEXT NOT NULL,
+    location TEXT NOT NULL,
+    event_date DATE NOT NULL,
+    items TEXT NOT NULL, -- Stored as JSON string
+    services TEXT NOT NULL, -- Stored as JSON string
+    status TEXT DEFAULT 'pending', -- pending, approved, rejected
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_quote_requests_status ON quote_requests(status);
