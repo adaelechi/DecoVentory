@@ -10,7 +10,7 @@ const eventRoutes = require('./routes/events');
 const borrowerRoutes = require('./routes/borrowers');
 const activityLogRoutes = require('./routes/activityLogs');
 const quoteRoutes = require('./routes/quoteRoutes');
-const db = require('./database/database');
+const { db, isPostgres } = require('./database/database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,17 +24,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Multer config for decorations
-const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, 'uploads/decorations'));
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-const uploadDecorations = multer({ storage });
+let decorationStorage;
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+  const cloudinaryConfig = require('./config/cloudinary');
+  decorationStorage = cloudinaryConfig.decorationStorage;
+} else {
+  decorationStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, path.join(__dirname, 'uploads/decorations'));
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+}
+const uploadDecorations = multer({ storage: decorationStorage });
 app.set('uploadDecorations', uploadDecorations);
 
 // Routes
@@ -67,6 +72,7 @@ app.use((err, req, res, next) => {
 });
 
 function ensureMaterialsLocationColumn() {
+  if (isPostgres) return Promise.resolve();
   return new Promise((resolve, reject) => {
     db.all('PRAGMA table_info(materials)', (err, columns) => {
       if (err) {
@@ -95,17 +101,25 @@ function ensureMaterialsLocationColumn() {
 }
 
 function ensureMaterialLocationsTable() {
-  return new Promise((resolve, reject) => {
-    db.run(`
-      CREATE TABLE IF NOT EXISTS material_locations (
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS material_locations (
+        id SERIAL PRIMARY KEY,
+        material_id INTEGER NOT NULL REFERENCES materials(id) ON DELETE CASCADE,
+        location_name TEXT NOT NULL,
+        quantity INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS material_locations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         material_id INTEGER NOT NULL,
         location_name TEXT NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
-      )
-    `, (err) => {
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
       if (err) {
         reject(err);
         return;
@@ -115,15 +129,17 @@ function ensureMaterialLocationsTable() {
       db.all('SELECT count(*) as count FROM material_locations', (countErr, rows) => {
         if (countErr) return reject(countErr);
         
-        if (rows[0].count === 0) {
+        const count = rows[0] ? (rows[0].count || 0) : 0;
+        if (Number(count) === 0) {
           // Empty table, do initial migration from materials
-          db.run(`
+          const migrateSql = `
             INSERT INTO material_locations (material_id, location_name, quantity)
             SELECT id, location, total_quantity FROM materials
             WHERE location IS NOT NULL AND location != ''
-          `, function(insertErr) {
+          `;
+          db.run(migrateSql, function(insertErr) {
             if (insertErr) return reject(insertErr);
-            console.log(`✅ Migrated ${this.changes} existing material locations`);
+            console.log(`✅ Migrated existing material locations`);
             resolve();
           });
         } else {
@@ -135,6 +151,7 @@ function ensureMaterialLocationsTable() {
 }
 
 function ensureEventDecorationsColumns() {
+  if (isPostgres) return Promise.resolve();
   return new Promise((resolve, reject) => {
     db.all('PRAGMA table_info(event_decorations)', (err, columns) => {
       if (err) {

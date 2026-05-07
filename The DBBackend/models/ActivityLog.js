@@ -1,4 +1,4 @@
-const db = require('../database/database');
+const { db } = require('../database/database');
 
 class ActivityLog {
   static create(material_id, action_type, quantity, reference_id, notes, callback) {

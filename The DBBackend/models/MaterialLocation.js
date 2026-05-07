@@ -1,4 +1,4 @@
-const db = require('../database/database');
+const { db } = require('../database/database');
 
 class MaterialLocation {
   static getByMaterialId(materialId, callback) {

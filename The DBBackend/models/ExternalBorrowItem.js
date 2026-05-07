@@ -1,4 +1,4 @@
-const db = require('../database/database');
+const { db } = require('../database/database');
 
 class ExternalBorrowItem {
   static create(borrow_id, material_id, quantity, callback) {
