@@ -38,7 +38,7 @@ const API = {
 
   logout: () => {
     clearAuthToken();
-    window.location.href = '../Loginpage/index.html';
+    window.location.href = '/Dashboard/index.html';
   },
 
   // Materials
@@ -108,11 +108,11 @@ function checkAuth() {
     if (window.showToast) {
       showToast.error('Please login first');
       setTimeout(() => {
-        window.location.href = '../ExecLogin/index.html';
+        window.location.href = '/Dashboard/index.html';
       }, 1500);
     } else {
       alert('Please login first');
-      window.location.href = '../ExecLogin/index.html';
+      window.location.href = '/Dashboard/index.html';
     }
   }
 }
