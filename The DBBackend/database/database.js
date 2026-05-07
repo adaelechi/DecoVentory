@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 

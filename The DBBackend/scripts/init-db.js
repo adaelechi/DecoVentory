@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const fs = require('fs');
 const path = require('path');
 

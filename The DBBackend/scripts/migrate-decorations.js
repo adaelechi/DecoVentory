@@ -1,6 +1,7 @@
 require('dotenv').config();
 const sqlite3 = require('sqlite3').verbose();
 const { Pool } = require('pg');
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const path = require('path');
 
 const sqliteDbPath = path.join(__dirname, '../database/decoventory.db');
