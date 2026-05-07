@@ -8,9 +8,11 @@ let isPostgres = false;
 if (process.env.DATABASE_URL) {
   console.log('Using PostgreSQL database');
   isPostgres = true;
+  
+  // Parse connection string to handle SSL parameters properly
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
+    ssl: process.env.DATABASE_URL.includes('localhost') ? false : {
       rejectUnauthorized: false
     }
   });

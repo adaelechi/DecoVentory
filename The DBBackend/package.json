@@ -7,7 +7,9 @@
     "start": "nodemon server.js",
     "start:prod": "node server.js",
     "dev": "nodemon server.js",
-    "init-db": "node database/init.js"
+    "init-db": "node database/init.js",
+    "init-db:pg": "node scripts/init-db.js",
+    "migrate:decorations": "node scripts/migrate-decorations.js"
   },
   "keywords": [
     "inventory",
