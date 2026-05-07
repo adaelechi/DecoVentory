@@ -28,7 +28,7 @@ const cancelDetailsUpdate = document.getElementById('cancelDetailsUpdate');
 
 // API_BASE_URL and IMAGE_BASE_URL are now provided by api.js
 
-
+//tt
 let allMaterials = [];
 let selectedMaterial = null;
 
