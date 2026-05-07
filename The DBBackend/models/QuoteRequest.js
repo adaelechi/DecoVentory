@@ -1,8 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-const dbPath = path.resolve(__dirname, '../database/decoventory.db');
-const db = new sqlite3.Database(dbPath);
+const { db } = require('../database/database');
 
 class QuoteRequest {
     static async getAll() {

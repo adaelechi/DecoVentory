@@ -7,6 +7,9 @@ const authMiddleware = require('../middleware/auth');
 router.get('/', eventController.getAllEvents);
 router.get('/:id', eventController.getEventById);
 
+const multer = require('multer');
+const path = require('path');
+
 // Protected routes
 let storage;
 if (process.env.CLOUDINARY_CLOUD_NAME) {

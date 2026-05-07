@@ -31,7 +31,25 @@ async function migrate() {
 
     console.log(`📦 Found ${decorations.length} decorations in SQLite.`);
 
-    // 2. Insert into PostgreSQL
+    // 2. Migrate Admins
+    console.log('👥 Migrating Admins...');
+    const admins = await new Promise((resolve, reject) => {
+      sqliteDb.all('SELECT * FROM admins', (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    for (const admin of admins) {
+      await pgPool.query(
+        'INSERT INTO admins (passcode_hash, role, active, created_at) VALUES ($1, $2, $3, $4)',
+        [admin.passcode_hash, admin.role, admin.active === 1, admin.created_at]
+      );
+      console.log(`✅ Migrated Admin: ${admin.role}`);
+    }
+
+    // 3. Insert into PostgreSQL
+    console.log('🖼️ Migrating Event Decorations...');
     for (const dec of decorations) {
       const query = `
         INSERT INTO event_decorations 
