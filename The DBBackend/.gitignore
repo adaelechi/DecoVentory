@@ -3,3 +3,5 @@ node_modules/
 database/*.db
 *.log
 .DS_Store
+.env.production.example
+.env.development.example

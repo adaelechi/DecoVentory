@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Keep example files
+!.env.example
+!.env.*.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backend specific (if any leak out)
+The DBBackend/database/*.db
+The DBBackend/*.log
