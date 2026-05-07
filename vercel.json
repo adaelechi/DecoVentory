@@ -2,5 +2,34 @@
   "version": 2,
   "name": "decoventory-frontend",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/Dashboard/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/Dashboard",
+      "destination": "/Dashboard/index.html"
+    },
+    {
+      "source": "/RentMaterials",
+      "destination": "/RentMaterials/index.html"
+    },
+    {
+      "source": "/RecentDecorations",
+      "destination": "/RecentDecorations/index.html"
+    },
+    {
+      "source": "/Admin",
+      "destination": "/Admin/index.html"
+    },
+    {
+      "source": "/addNewResource",
+      "destination": "/addNewResource/addNewResource.html"
+    }
+  ]
 }
