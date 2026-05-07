@@ -26,7 +26,8 @@ const detailsMaterialName = document.getElementById('selectedMaterialName');
 const closeDetailsModal = document.getElementById('closeDetailsModal');
 const cancelDetailsUpdate = document.getElementById('cancelDetailsUpdate');
 
-const API_BASE_URL = 'http://localhost:3000/api';
+// API_BASE_URL and IMAGE_BASE_URL are now provided by api.js
+
 
 let allMaterials = [];
 let selectedMaterial = null;
@@ -317,7 +318,7 @@ function renderResources(materials) {
 
     resourceSection.innerHTML = materials.map(material => `
         <div class="resource-card">
-            ${material.image_url ? `<img src="http://localhost:3000${material.image_url}" alt="${material.name}" class="resource-image">` : '<div class="no-image">📦</div>'}
+            ${material.image_url ? `<img src="${IMAGE_BASE_URL}${material.image_url}" alt="${material.name}" class="resource-image">` : '<div class="no-image">📦</div>'}
             <h3>${material.name}</h3>
             <p><strong>Category:</strong> ${material.category}</p>
             ${material.size ? `<p><strong>Size:</strong> ${material.size}</p>` : ''}
@@ -656,7 +657,7 @@ async function loadDashboardData() {
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         if (resourceSection) {
-            resourceSection.innerHTML = '<p class="error-message">Unable to connect to server. Please ensure the backend is running on http://localhost:3000</p>';
+            resourceSection.innerHTML = `<p class="error-message">Unable to connect to server. Please ensure the backend is running at ${API_BASE_URL}</p>`;
         }
     }
 }

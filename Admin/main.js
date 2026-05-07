@@ -1,6 +1,7 @@
 const userRole = localStorage.getItem('decoventory_role');
 const authToken = localStorage.getItem('decoventory_token');
-const API_BASE_URL = 'http://localhost:3000/api';
+// API_BASE_URL and IMAGE_BASE_URL are now provided by api.js
+
 
 if (userRole !== 'admin') {
     window.location.href = './login.html';

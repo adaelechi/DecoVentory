@@ -5,13 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addDecorationBtn = document.getElementById('addDecorationBtn');
     const addDecorationForm = document.getElementById('addDecorationForm');
     
-    const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3000/api' 
-        : '/api';
+    // API_BASE_URL and IMAGE_BASE_URL are now provided by api.js
 
-    const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:3000' 
-        : '';
 
     // Check admin status
     const token = localStorage.getItem('decoventory_token');
@@ -25,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch and render projects
     async function fetchProjects() {
         try {
-            const response = await fetch(`${API_URL}/events`);
+            const response = await fetch(`${API_BASE_URL}/events`);
             if (!response.ok) throw new Error('Failed to fetch projects');
             const projects = await response.json();
             renderGallery(projects);
@@ -43,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         galleryGrid.innerHTML = projects.map(project => {
             const mainImage = project.images && project.images.length > 0 
-                ? `${BASE_URL}${project.images[0]}` 
+                ? `${IMAGE_BASE_URL}${project.images[0]}` 
                 : '../assets/placeholder-decoration.jpg'; // Need a placeholder
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {
@@ -90,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = document.getElementById('nextImage');
 
         if (project.images && project.images.length > 0) {
-            carousel.innerHTML = project.images.map(img => `<img src="${BASE_URL}${img}" alt="${project.event_name}">`).join('');
+            carousel.innerHTML = project.images.map(img => `<img src="${IMAGE_BASE_URL}${img}" alt="${project.event_name}">`).join('');
             
             // Show/hide nav buttons
             const hasMultiple = project.images.length > 1;
@@ -148,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(`${API_URL}/events`, {
+            const response = await fetch(`${API_BASE_URL}/events`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

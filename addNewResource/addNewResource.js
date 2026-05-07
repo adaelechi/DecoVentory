@@ -291,7 +291,7 @@ addResourceBtn.addEventListener('click', async (e) => {
     addResourceBtn.disabled = true;
 
     try {
-        const response = await fetch('http://localhost:3000/api/materials', {
+        const response = await fetch(`${API_BASE_URL}/materials`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`

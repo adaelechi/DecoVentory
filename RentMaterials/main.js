@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // or we can use the global API if it was included.
     async function loadInventory() {
         try {
-            const response = await fetch('http://localhost:3000/api/materials');
+            const response = await fetch(`${API_BASE_URL}/materials`);
             const data = await response.json();
             
             // Filter only items that are relevant for rent/quotes or just display all
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             submitRequestBtn.disabled = true;
 
             // Send POST request to API
-            const response = await fetch('http://localhost:3000/api/quotes', {
+            const response = await fetch(`${API_BASE_URL}/quotes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)
