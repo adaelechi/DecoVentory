@@ -29,16 +29,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         'tools': { name: 'Tools (scissors, nails, hammer, pins)', price: 2500, quantity: 0 }
     };
 
-    // Prices matching the quotation provided
-    const fixedPrices = {
-        'Ribbons': 2000,
-        'Short fabric material': 2500,
-        'Medium fabric material': 3500,
-        'Large fabric material': 4500,
-        'Extra-large fabric material': 5500,
-        'Balloon': 9000,
-        'Flowers': 300
+    // Fabric categories — price is determined by SIZE (short < medium < large < xl)
+    const FABRIC_CATEGORIES = ['satin', 'voile', 'organza', 'chiffon', 'lace', 'silk', 'tulle', 'fabric'];
+
+    // Size → price map for fabric materials (matches the official quotation)
+    const FABRIC_SIZE_PRICES = {
+        'short':       2500,
+        'small':       2500,  // treat small same as short
+        'medium':      3500,
+        'large':       4500,
+        'extra-large': 5500,
+        'xl':          5500,
+        'extra large': 5500
     };
+
+    // Non-fabric category prices (category name → price)
+    const CATEGORY_PRICES = {
+        'ribbon':   2000,
+        'ribbons':  2000,
+        'balloon':  9000,
+        'balloons': 9000,
+        'flower':   300,
+        'flowers':  300,
+        // Tools — priced at 2,500 per unit to match the quotation bundle rate
+        'tool':      2500,
+        'tools':     2500,
+        'scissors':  2500,
+        'hammer':    2500,
+        'nail':      2500,
+        'nails':     2500,
+        'pin':       2500,
+        'pins':      2500
+    };
+
+    /**
+     * Determine the rental price for a material based on its category and size.
+     * Fabric materials are priced by size; others by category.
+     */
+    function resolvePrice(item) {
+        const cat = (item.category || '').toLowerCase().trim();
+        const size = (item.size || '').toLowerCase().trim();
+
+        // Is it a fabric material?
+        const isFabric = FABRIC_CATEGORIES.some(fc => cat.includes(fc));
+        if (isFabric) {
+            // Try to match size key
+            const sizeKey = Object.keys(FABRIC_SIZE_PRICES).find(k => size.includes(k));
+            if (sizeKey) return FABRIC_SIZE_PRICES[sizeKey];
+            // Fallback: no size stored — default to medium price
+            return 3500;
+        }
+
+        // Non-fabric: match by category
+        const catKey = Object.keys(CATEGORY_PRICES).find(k => cat.includes(k));
+        if (catKey) return CATEGORY_PRICES[catKey];
+
+        // Unknown — no price assigned yet
+        return 0;
+    }
 
     // DOM Elements
     const inventoryListEl = document.getElementById('inventory-list');
@@ -70,28 +118,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // Filter only items that are relevant for rent/quotes or just display all
             // For the specific quotation, we map names to fixed prices if they match
-            inventory = data.map(item => {
-                // Determine price based on known mappings or default to 0 if not specified
-                let price = 0;
-                // Try to find a matching price from the fixedPrices list based on name
-                const matchingKey = Object.keys(fixedPrices).find(k => 
-                    item.name.toLowerCase().includes(k.toLowerCase()) || 
-                    item.category.toLowerCase() === k.toLowerCase()
-                );
-                
-                if (matchingKey) {
-                    price = fixedPrices[matchingKey];
-                } else if (item.category === 'Fabrics') {
-                    price = 3500; // Default generic fabric price
-                } else if (item.category === 'Tools') {
-                    price = 2500;
-                }
-                
-                return {
-                    ...item,
-                    price: price
-                };
-            });
+            inventory = data.map(item => ({
+                ...item,
+                price: resolvePrice(item)
+            }));
             
             renderInventory();
         } catch (error) {
