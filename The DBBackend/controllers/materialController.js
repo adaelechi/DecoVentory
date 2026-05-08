@@ -62,7 +62,7 @@ exports.createMaterial = (req, res) => {
     location: parsedLocations[0].name, // keep for backwards compatibility if needed
     size: size || null,
     colour: colour || null,
-    image_url: req.file ? `/uploads/${req.file.filename}` : null
+    image_url: req.file ? req.file.path : null
   };
  
   Material.create(materialData, (err, result) => {
@@ -144,7 +144,7 @@ exports.updateMaterial = (req, res) => {
       location: parsedLocations ? parsedLocations[0].name : (location !== undefined ? location : existingMaterial.location),
       size: size !== undefined ? size : existingMaterial.size,
       colour: colour !== undefined ? colour : existingMaterial.colour,
-      image_url: req.file ? `/uploads/${req.file.filename}` : existingMaterial.image_url
+      image_url: req.file ? req.file.path : existingMaterial.image_url
     };
 
     Material.update(materialId, materialData, (updateError) => {
