@@ -68,7 +68,7 @@ if (process.env.DATABASE_URL) {
           };
           callback.call(result, null);
         })
-        .catch(err => callback(err));
+        .catch(err => callback.call({ lastID: null, changes: 0 }, err));
     }
   };
 } else {

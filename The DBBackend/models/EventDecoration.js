@@ -13,7 +13,7 @@ class EventDecoration {
     const { event_name, venue, event_date, materials_used, images, instagram_link, notes } = data;
     db.run(
       `INSERT INTO event_decorations (event_name, venue, event_date, materials_used, returned, images, instagram_link, notes) 
-       VALUES (?, ?, ?, ?, 0, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, false, ?, ?, ?)`,
       [event_name, venue, event_date, JSON.stringify(materials_used), JSON.stringify(images || []), instagram_link, notes],
       function (err) {
         callback(err, { id: this.lastID });
@@ -24,7 +24,7 @@ class EventDecoration {
   static markReturned(id, lostItems, damagedItems, callback) {
     db.run(
       `UPDATE event_decorations 
-       SET returned = 1, lost_items = ?, damaged_items = ?
+       SET returned = true, lost_items = ?, damaged_items = ?
        WHERE id = ?`,
       [JSON.stringify(lostItems || []), JSON.stringify(damagedItems || []), id],
       callback
