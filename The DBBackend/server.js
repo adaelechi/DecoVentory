@@ -21,8 +21,10 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(compression()); // gzip all responses — reduces payload size ~70%
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Skip body-parsing for multipart/form-data so Multer can read the stream cleanly
+const isNotMultipart = (req) => !(req.headers['content-type'] || '').includes('multipart/form-data');
+app.use((req, res, next) => { if (isNotMultipart(req)) express.json()(req, res, next); else next(); });
+app.use((req, res, next) => { if (isNotMultipart(req)) express.urlencoded({ extended: true })(req, res, next); else next(); });
 if (!process.env.JWT_SECRET) {
   console.warn('⚠️ WARNING: JWT_SECRET is not set. Token generation will fail!');
 }
@@ -36,24 +38,6 @@ app.use((req, res, next) => {
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Multer config for decorations
-let decorationStorage;
-if (process.env.CLOUDINARY_CLOUD_NAME) {
-  const cloudinaryConfig = require('./config/cloudinary');
-  decorationStorage = cloudinaryConfig.decorationStorage;
-} else {
-  decorationStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path.join(__dirname, 'uploads/decorations'));
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-  });
-}
-const uploadDecorations = multer({ storage: decorationStorage });
-app.set('uploadDecorations', uploadDecorations);
 
 // Routes
 app.use('/api/auth', authRoutes);

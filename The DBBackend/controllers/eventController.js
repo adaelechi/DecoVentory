@@ -43,7 +43,11 @@ exports.createEvent = (req, res) => {
   const { event_name, venue, event_date, materials_used, instagram_link, notes } = req.body;
   const files = req.files || [];
   
-  const images = files.map(file => `/uploads/decorations/${file.filename}`);
+  const images = files.map(file =>
+    // Cloudinary storage sets file.path to the full HTTPS URL;
+    // local diskStorage sets file.filename only.
+    file.path && file.path.startsWith('http') ? file.path : `/uploads/decorations/${file.filename}`
+  );
 
   if (!event_name || !venue || !event_date || !materials_used) {
     return res.status(400).json({ error: 'All fields are required' });

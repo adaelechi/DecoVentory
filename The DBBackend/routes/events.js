@@ -26,10 +26,27 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
     }
   });
 }
-const uploadDecorations = multer({ storage });
+const multerImageFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed'), false);
+  }
+};
+const uploadDecorations = multer({ storage, fileFilter: multerImageFilter });
 
-// Protected routes
-router.post('/', authMiddleware, uploadDecorations.array('images', 10), eventController.createEvent);
+// Protected routes — inline Multer error handler for clear client feedback
+function handleUpload(req, res, next) {
+  uploadDecorations.array('images', 10)(req, res, (err) => {
+    if (err) {
+      console.error('[Multer] Upload error:', err.message);
+      return res.status(400).json({ error: `Upload failed: ${err.message}` });
+    }
+    next();
+  });
+}
+
+router.post('/', authMiddleware, handleUpload, eventController.createEvent);
 router.put('/:id/return', authMiddleware, eventController.markEventReturned);
 router.delete('/:id', authMiddleware, eventController.deleteEvent);
 
