@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Role Check
     const userRole = localStorage.getItem('decoventory_role');
     const sidebarFooter = document.querySelector('.sidebar-footer');
-    if (userRole === 'viewer' && sidebarFooter) {
-        sidebarFooter.style.display = 'none';
+    if (userRole === 'viewer') {
+        if (sidebarFooter) sidebarFooter.style.display = 'none';
+        // Also hide tablet nav admin items for viewer
+        document.querySelectorAll('.tablet-nav-admin').forEach(el => el.style.display = 'none');
     }
 
     // 2. State & Variables
@@ -418,21 +420,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Admin & Logout Handlers
-    const adminLink = document.querySelector('.admin-link');
-    if (adminLink) {
-        adminLink.addEventListener('click', () => {
+    // Admin & Logout Handlers — wire up both desktop sidebar-footer and tablet nav items
+    document.querySelectorAll('.admin-link').forEach(el => {
+        el.addEventListener('click', () => {
             if (localStorage.getItem('decoventory_role') === 'admin') {
-                window.location.href = '../Admin/index.html';
+                window.location.href = '/Admin/index.html';
             } else {
-                window.location.href = '../Dashboard/index.html';
+                window.location.href = '/Dashboard/index.html';
             }
         });
-    }
+    });
 
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('decoventory_role');
+            localStorage.removeItem('decoventory_token');
+            window.location.reload();
+        });
+    }
+
+    const tabletLogoutBtn = document.getElementById('tabletLogoutBtn');
+    if (tabletLogoutBtn) {
+        tabletLogoutBtn.addEventListener('click', () => {
             localStorage.removeItem('decoventory_role');
             localStorage.removeItem('decoventory_token');
             window.location.reload();

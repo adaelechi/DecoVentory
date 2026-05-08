@@ -56,6 +56,8 @@ if (userRole === 'viewer') {
     if (addResourceLink) addResourceLink.style.display = 'none';
     const sidebarFooter = document.querySelector('.sidebar-footer');
     if (sidebarFooter) sidebarFooter.style.display = 'none';
+    // Also hide tablet nav admin items for viewer
+    document.querySelectorAll('.tablet-nav-admin').forEach(el => el.style.display = 'none');
 }
 
 function normalizeValue(value) {
@@ -720,11 +722,11 @@ function resetFilters() {
     renderResources(allMaterials);
 }
 
-const adminLink = document.querySelector('.admin-link');
-if (adminLink) {
-    adminLink.addEventListener('click', () => {
+// Wire up all admin-link elements (desktop sidebar-footer + tablet nav)
+document.querySelectorAll('.admin-link').forEach(el => {
+    el.addEventListener('click', () => {
         if (localStorage.getItem('decoventory_role') === 'admin') {
-            window.location.href = '../Admin/index.html';
+            window.location.href = '/Admin/index.html';
         } else {
             // Show auth modal instead of redirecting
             if (authModal) {
@@ -732,6 +734,16 @@ if (adminLink) {
                 if (welcomeModal) welcomeModal.style.display = 'none';
             }
         }
+    });
+});
+
+// Wire up tablet logout button
+const tabletLogoutBtn = document.getElementById('tabletLogoutBtn');
+if (tabletLogoutBtn) {
+    tabletLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('decoventory_role');
+        localStorage.removeItem('decoventory_token');
+        window.location.reload();
     });
 }
 

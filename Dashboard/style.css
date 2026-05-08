@@ -678,6 +678,12 @@ body.dark-mode .details-secondary {
 }
 
 /* Tablet / iPad breakpoint — collapse sidebar to bottom nav */
+
+/* Hide tablet-only nav items on desktop */
+.tablet-nav-admin {
+    display: none !important;
+}
+
 @media (max-width: 1024px) {
     .details-grid {
         grid-template-columns: 1fr;
@@ -758,6 +764,11 @@ body.dark-mode .details-secondary {
     .mainbar {
         width: 100%;
         min-width: 0;
+    }
+
+    /* Show tablet-only admin/logout items in bottom nav */
+    .tablet-nav-admin {
+        display: flex !important;
     }
 }
 

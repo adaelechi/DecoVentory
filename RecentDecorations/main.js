@@ -181,26 +181,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Role Check for Sidebar Footer
     const sidebarFooter = document.querySelector('.sidebar-footer');
-    if (role === 'viewer' && sidebarFooter) {
-        sidebarFooter.style.display = 'none';
+    if (role === 'viewer') {
+        if (sidebarFooter) sidebarFooter.style.display = 'none';
+        // Also hide tablet nav admin items for viewer
+        document.querySelectorAll('.tablet-nav-admin').forEach(el => el.style.display = 'none');
     }
 
-    // Admin & Logout Handlers
-    const adminLink = document.querySelector('.admin-link');
-    if (adminLink) {
-        adminLink.addEventListener('click', () => {
+    // Admin & Logout Handlers — wire up both desktop and tablet nav items
+    document.querySelectorAll('.admin-link').forEach(el => {
+        el.addEventListener('click', () => {
             if (localStorage.getItem('decoventory_role') === 'admin') {
-                window.location.href = '../Admin/index.html';
+                window.location.href = '/Admin/index.html';
             } else {
-                window.location.href = '../Dashboard/index.html';
+                window.location.href = '/Dashboard/index.html';
             }
         });
-    }
+    });
 
     // Logout
-    document.getElementById('logoutBtn').onclick = () => {
-        localStorage.removeItem('decoventory_token');
-        localStorage.removeItem('decoventory_role');
-        window.location.reload();
-    };
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.onclick = () => {
+            localStorage.removeItem('decoventory_token');
+            localStorage.removeItem('decoventory_role');
+            window.location.reload();
+        };
+    }
+
+    const tabletLogoutBtn = document.getElementById('tabletLogoutBtn');
+    if (tabletLogoutBtn) {
+        tabletLogoutBtn.onclick = () => {
+            localStorage.removeItem('decoventory_token');
+            localStorage.removeItem('decoventory_role');
+            window.location.reload();
+        };
+    }
 });
