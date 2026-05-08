@@ -101,3 +101,86 @@
 .admin-table tr:hover {
     background-color: var(--bg-secondary);
 }
+
+/* Premium Button Styles */
+.btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--deco-red) 0%, #A53233 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(197, 67, 68, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(197, 67, 68, 0.3);
+    background: linear-gradient(135deg, #d64f50 0%, var(--deco-red) 100%);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+}
+
+/* Contextual Button Styles for Quotes */
+.quote-card-actions .btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* Emerald Green for Approve */
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+}
+
+.quote-card-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+}
+
+.quote-card-actions .btn-secondary {
+    color: #ef4444; /* Rose/Red for Reject */
+    border-color: rgba(239, 68, 68, 0.2);
+    background: transparent;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+}
+
+.quote-card-actions .btn-secondary:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
+
+body.dark-mode .quote-card-actions .btn-secondary:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.btn-primary:disabled, .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
