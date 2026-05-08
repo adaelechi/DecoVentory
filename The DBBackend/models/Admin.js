@@ -1,22 +1,29 @@
-const { db } = require('../database/database');
+const { db, query, isPostgres } = require('../database/database');
 
 class Admin {
-  static getAllActive(callback) {
-    // In Postgres, active is BOOLEAN (true/false), in SQLite it's INTEGER (1/0)
-    // Using a comparison that works for both or checking db type
-    const { isPostgres } = require('../database/database');
+  static async getAllActive() {
     const sql = isPostgres 
       ? 'SELECT * FROM admins WHERE active = true' 
       : 'SELECT * FROM admins WHERE active = 1';
-    db.all(sql, callback);
+    return await query(sql);
   }
 
-  static updatePasscode(id, passcode_hash, callback) {
-    db.run('UPDATE admins SET passcode_hash = ? WHERE id = ?', [passcode_hash, id], callback);
+  static async updatePasscode(id, passcode_hash) {
+    const sql = 'UPDATE admins SET passcode_hash = ? WHERE id = ?';
+    return await query(sql, [passcode_hash, id]);
   }
 
-  static updateByRole(role, passcode_hash, callback) {
-    db.run('UPDATE admins SET passcode_hash = ? WHERE role = ?', [passcode_hash, role], callback);
+  static async updateByRole(role, passcode_hash) {
+    const sql = 'UPDATE admins SET passcode_hash = ? WHERE role = ?';
+    return await query(sql, [passcode_hash, role]);
+  }
+
+  static async getActiveByRole(role) {
+    const sql = isPostgres
+      ? 'SELECT * FROM admins WHERE role = ? AND active = true'
+      : 'SELECT * FROM admins WHERE role = ? AND active = 1';
+    const rows = await query(sql, [role]);
+    return rows[0];
   }
 }
 

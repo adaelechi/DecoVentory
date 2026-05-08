@@ -24,6 +24,12 @@ if (!process.env.JWT_SECRET) {
   console.warn('⚠️ WARNING: JWT_SECRET is not set. Token generation will fail!');
 }
 
+// Request Logger
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

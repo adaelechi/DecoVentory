@@ -108,12 +108,17 @@ if (process.env.DATABASE_URL) {
   };
 }
 
-// Unified query method that works for both
-const query = async (text, params) => {
+// Unified query method that returns Promise
+const query = async (text, params = []) => {
   if (isPostgres) {
-    return await db.query(text, params);
+    // Replace ? with $1, $2, etc. for pg
+    let count = 1;
+    const formattedText = text.replace(/\?/g, () => `$${count++}`);
+    const res = await db.query(formattedText, params);
+    return res.rows;
   } else {
-    return await db.query(text, params);
+    const res = await db.query(text, params);
+    return res.rows;
   }
 };
 
