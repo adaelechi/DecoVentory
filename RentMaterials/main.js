@@ -73,19 +73,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Is it a fabric material?
         const isFabric = FABRIC_CATEGORIES.some(fc => cat.includes(fc));
         if (isFabric) {
-            // Try to match size key
-            const sizeKey = Object.keys(FABRIC_SIZE_PRICES).find(k => size.includes(k));
-            if (sizeKey) return FABRIC_SIZE_PRICES[sizeKey];
-            // Fallback: no size stored — default to medium price
-            return 3500;
+            // Sort keys by length descending so 'extra-large' is tested before 'large'
+            const sizeKey = Object.keys(FABRIC_SIZE_PRICES)
+                .sort((a, b) => b.length - a.length)
+                .find(k => size.includes(k));
+            const price = sizeKey ? FABRIC_SIZE_PRICES[sizeKey] : 3500;
+            console.log(`[price] "${item.name}" | cat="${cat}" | size="${size}" | sizeKey="${sizeKey}" → ₦${price}`);
+            return price;
         }
 
         // Non-fabric: match by category
         const catKey = Object.keys(CATEGORY_PRICES).find(k => cat.includes(k));
-        if (catKey) return CATEGORY_PRICES[catKey];
-
-        // Unknown — no price assigned yet
-        return 0;
+        const price = catKey ? CATEGORY_PRICES[catKey] : 0;
+        console.log(`[price] "${item.name}" | cat="${cat}" | catKey="${catKey}" → ₦${price}`);
+        return price;
     }
 
     // DOM Elements
