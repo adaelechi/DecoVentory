@@ -633,7 +633,7 @@ async function updateMaterialDetails(event) {
 
         closeDetailsModalFn();
         showToast.success('Material updated successfully!');
-        await loadDashboardData();
+        await loadDashboardData(true); // bust cache so update is reflected immediately
     } catch (error) {
         if (detailsMessage) {
             detailsMessage.textContent = error.message || 'Unable to update details.';
@@ -642,7 +642,43 @@ async function updateMaterialDetails(event) {
     }
 }
 
-async function loadDashboardData() {
+// ── localStorage cache helpers ──────────────────────────────────────────────
+const CACHE_KEY = 'decoventory_materials_cache';
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function getCachedMaterials() {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const { data, timestamp } = JSON.parse(raw);
+        if (Date.now() - timestamp > CACHE_TTL_MS) return null; // stale
+        return data;
+    } catch { return null; }
+}
+
+function setCachedMaterials(data) {
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+    } catch { /* ignore quota errors */ }
+}
+
+function bustMaterialsCache() {
+    localStorage.removeItem(CACHE_KEY);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadDashboardData(bustCache = false) {
+    if (bustCache) bustMaterialsCache();
+
+    // 1. Render from cache immediately (feels instant)
+    const cached = getCachedMaterials();
+    if (cached) {
+        allMaterials = cached;
+        updateDashboardNumbers(cached);
+        renderResources(applyCurrentFilters(cached));
+    }
+
+    // 2. Always fetch fresh data in the background
     try {
         const response = await fetch(`${API_BASE_URL}/materials`);
         const materials = await response.json();
@@ -651,12 +687,14 @@ async function loadDashboardData() {
             throw new Error('Invalid response format');
         }
 
+        setCachedMaterials(materials);
         allMaterials = materials;
         updateDashboardNumbers(materials);
         renderResources(applyCurrentFilters(materials));
     } catch (error) {
         console.error('Error loading dashboard data:', error);
-        if (resourceSection) {
+        // Only show error if we had nothing to show from cache
+        if (!cached && resourceSection) {
             resourceSection.innerHTML = `<p class="error-message">Unable to connect to server. Please ensure the backend is running at ${API_BASE_URL}</p>`;
         }
     }

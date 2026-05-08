@@ -7,6 +7,8 @@ exports.getAllMaterials = (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Failed to fetch materials' });
     }
+    // Cache for 2 minutes — reduces Render load and speeds up repeat page visits
+    res.set('Cache-Control', 'public, max-age=120, stale-while-revalidate=60');
     res.json(materials);
   });
 };

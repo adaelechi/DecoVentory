@@ -108,26 +108,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
     const submitRequestBtn = document.getElementById('submit-request-btn');
 
+    // ── localStorage cache ────────────────────────────────────────────────────
+    const CACHE_KEY = 'decoventory_materials_cache';
+    const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes — same key as Dashboard
+
+    function getCachedMaterials() {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const { data, timestamp } = JSON.parse(raw);
+            if (Date.now() - timestamp > CACHE_TTL_MS) return null;
+            return data;
+        } catch { return null; }
+    }
+
+    function setCachedMaterials(data) {
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+        } catch { /* ignore */ }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // 3. Fetch Inventory
-    // We will import API from api.js but since this is a new page, we fetch directly or include api.js in HTML.
-    // For now, let's implement the fetch here to avoid modifying HTML imports if not needed, 
-    // or we can use the global API if it was included.
     async function loadInventory() {
+        // 1. Render from cache immediately (feels instant)
+        const cached = getCachedMaterials();
+        if (cached) {
+            inventory = cached.map(item => ({ ...item, price: resolvePrice(item) }));
+            renderInventory();
+        }
+
+        // 2. Fetch fresh in background
         try {
             const response = await fetch(`${API_BASE_URL}/materials`);
             const data = await response.json();
-            
-            // Filter only items that are relevant for rent/quotes or just display all
-            // For the specific quotation, we map names to fixed prices if they match
+            setCachedMaterials(data);
             inventory = data.map(item => ({
                 ...item,
                 price: resolvePrice(item)
             }));
-            
             renderInventory();
         } catch (error) {
             console.error('Failed to fetch inventory:', error);
-            inventoryListEl.innerHTML = '<p style="color:red">Failed to load inventory. Please ensure the backend is running.</p>';
+            if (!cached) {
+                inventoryListEl.innerHTML = '<p style="color:red">Failed to load inventory. Please ensure the backend is running.</p>';
+            }
         }
     }
 

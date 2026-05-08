@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const https = require('https');
+const compression = require('compression');
 
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/materials');
@@ -18,6 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(compression()); // gzip all responses — reduces payload size ~70%
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -62,8 +64,16 @@ app.use('/api/borrowers', borrowerRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/quotes', quoteRoutes);
 
+// ── Cache helper — sets Cache-Control on public read-only responses ──
+// 120s = browsers/CDN cache the response for 2 minutes
+// stale-while-revalidate=60 = serve stale for 60s while fetching fresh in background
+function setPublicCache(res, maxAgeSeconds = 120) {
+  res.set('Cache-Control', `public, max-age=${maxAgeSeconds}, stale-while-revalidate=60`);
+}
+
 // Health check
 app.get('/', (req, res) => {
+  setPublicCache(res, 30);
   res.json({
     message: 'DecoVentory API',
     version: '1.0.0',
