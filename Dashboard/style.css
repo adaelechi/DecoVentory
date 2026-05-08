@@ -27,7 +27,9 @@ header {
     position: sticky;
     top: 0;
     left: 0;
-    z-index: 1;
+    right: 0;
+    width: 100%;
+    z-index: 100;
 }
 
 .nav-bar {
@@ -35,11 +37,12 @@ header {
     height: 3.5rem;
     background-color: var(--nav-bg);
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
-    align-content: center;
+    align-items: center;
     padding: 0 2rem;
     border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
 }
 
 .brand {
@@ -674,7 +677,8 @@ body.dark-mode .details-secondary {
     color: var(--text-primary);
 }
 
-@media (max-width: 768px) {
+/* Tablet / iPad breakpoint — collapse sidebar to bottom nav */
+@media (max-width: 1024px) {
     .details-grid {
         grid-template-columns: 1fr;
     }
@@ -697,14 +701,10 @@ body.dark-mode .details-secondary {
         flex-direction: row;
         justify-content: space-around;
         align-items: center;
-        border-top: 1px solid #d0d0d0;
+        border-top: 1px solid var(--border-color);
         border-right: none;
         z-index: 100;
-        background-color: #fff;
-    }
-
-    body.dark-mode .sidebar {
-        border-top: 1px solid #404040;
+        background-color: var(--sidebar-bg);
     }
 
     .sidebar h2 {
@@ -729,6 +729,7 @@ body.dark-mode .details-secondary {
         flex: 1;
         display: flex;
         justify-content: center;
+        background-color: transparent;
     }
 
     .sidebar_list li a {
@@ -746,8 +747,17 @@ body.dark-mode .details-secondary {
         line-height: 1.1;
     }
 
+    .sidebar-footer {
+        display: none;
+    }
+
     .settings {
         display: none;
+    }
+
+    .mainbar {
+        width: 100%;
+        min-width: 0;
     }
 }
 

@@ -12,6 +12,15 @@
     .rent-container {
         grid-template-columns: 1fr;
         height: auto;
+        overflow: visible;
+    }
+
+    .selection-panel {
+        overflow-y: visible;
+    }
+
+    .quote-preview-panel {
+        min-height: 50vh;
     }
 }
 

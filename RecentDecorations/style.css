@@ -302,12 +302,12 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .project-content {
         grid-template-columns: 1fr;
     }
     
-    .project-images-carousel {
+    .project-carousel-wrapper {
         height: 300px;
     }
 }
