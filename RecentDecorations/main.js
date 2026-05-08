@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         galleryGrid.innerHTML = projects.map(project => {
             const mainImage = project.images && project.images.length > 0 
-                ? `${IMAGE_BASE_URL}${project.images[0]}` 
+                ? getImageUrl(project.images[0])
                 : '../assets/placeholder-decoration.jpg'; // Need a placeholder
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = document.getElementById('nextImage');
 
         if (project.images && project.images.length > 0) {
-            carousel.innerHTML = project.images.map(img => `<img src="${IMAGE_BASE_URL}${img}" alt="${project.event_name}">`).join('');
+            carousel.innerHTML = project.images.map(img => `<img src="${getImageUrl(img)}" alt="${project.event_name}">`).join('');
             
             // Show/hide nav buttons
             const hasMultiple = project.images.length > 1;

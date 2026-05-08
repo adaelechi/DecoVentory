@@ -8,6 +8,16 @@ const IMAGE_BASE_URL = isLocalhost
   ? 'http://localhost:3000' 
   : 'https://decoventory.onrender.com';
 
+// Returns the correct image src — if image_url is already a full URL (Cloudinary),
+// use it directly; otherwise prepend the backend base URL (local /uploads/ fallback)
+function getImageUrl(imageUrl) {
+  if (!imageUrl) return null;
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    return imageUrl;
+  }
+  return IMAGE_BASE_URL + imageUrl;
+}
+
 
 // Helper functions for auth token
 const getAuthToken = () => localStorage.getItem('decoventory_token');
