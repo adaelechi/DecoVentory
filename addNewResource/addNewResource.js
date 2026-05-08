@@ -229,7 +229,7 @@ addResourceBtn.addEventListener('click', async (e) => {
     if (!token) {
         showToast.error('Please login first');
         setTimeout(() => {
-            window.location.href = '../ExecLogin/index.html';
+            window.location.href = '/ExecLogin/index.html';
         }, 1500);
         return;
     }
@@ -305,7 +305,7 @@ addResourceBtn.addEventListener('click', async (e) => {
         if (data.success) {
             showToast.success('Resource added successfully!');
             setTimeout(() => {
-                window.location.href = '../Dashboard/index.html';
+                window.location.href = '/Dashboard/';
             }, 1500);
         } else {
             showToast.error(data.error || 'Failed to add resource');
@@ -331,9 +331,9 @@ const adminLink = document.querySelector('.admin-link');
 if (adminLink) {
     adminLink.addEventListener('click', () => {
         if (localStorage.getItem('decoventory_role') === 'admin') {
-            window.location.href = '../Admin/index.html';
+            window.location.href = '/Admin/';
         } else {
-            window.location.href = '../Dashboard/index.html';
+            window.location.href = '/Dashboard/';
         }
     });
 }
