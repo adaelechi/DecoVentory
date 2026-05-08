@@ -228,11 +228,37 @@ function ensureEventDecorationsColumns() {
   });
 }
 
+// Fix any image_url values that were incorrectly stored as local /uploads/ paths
+// instead of full Cloudinary HTTPS URLs (caused by a previous bug in materialController)
+async function fixCloudinaryImageUrls() {
+  if (!isPostgres || !process.env.CLOUDINARY_CLOUD_NAME) return;
+
+  const { query } = require('./database/database');
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const baseUrl = `https://res.cloudinary.com/${cloudName}/image/upload/`;
+
+  try {
+    // /uploads/ is 9 characters, so substring from position 10 strips it
+    const result = await query(
+      `UPDATE materials
+       SET image_url = $1 || substring(image_url from 10)
+       WHERE image_url LIKE '/uploads/%'`,
+      [baseUrl]
+    );
+    if (result.rowCount > 0) {
+      console.log(`✅ Fixed ${result.rowCount} broken Cloudinary image URL(s) in materials table`);
+    }
+  } catch (err) {
+    console.error('⚠️  Failed to fix Cloudinary image URLs:', err.message);
+  }
+}
+
 (async () => {
   try {
     await ensureMaterialsLocationColumn();
     await ensureMaterialLocationsTable();
     await ensureEventDecorationsColumns();
+    await fixCloudinaryImageUrls();
 
     app.listen(PORT, () => {
       console.log(`\n🚀 DecoVentory API Server running on port ${PORT}`);
