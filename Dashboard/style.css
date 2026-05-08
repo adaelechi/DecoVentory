@@ -647,6 +647,13 @@ body.dark-mode #search-input {
     color: #fff;
 }
 
+.details-primary:disabled,
+.details-secondary:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    filter: grayscale(0.3);
+}
+
 .resource-card .date {
     color: #999;
     margin-top: 1rem;

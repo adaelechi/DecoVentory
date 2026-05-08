@@ -128,18 +128,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Add Decoration Form
     addDecorationForm.onsubmit = async (e) => {
         e.preventDefault();
-        
+
+        const submitBtn = addDecorationForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+
+        // Disable button immediately to prevent double-taps
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Uploading...';
+        submitBtn.style.opacity = '0.7';
+
         const formData = new FormData();
         formData.append('event_name', document.getElementById('eventName').value);
         formData.append('venue', document.getElementById('venue').value);
         formData.append('event_date', document.getElementById('eventDate').value);
         formData.append('instagram_link', document.getElementById('instagramUrl').value);
         formData.append('notes', document.getElementById('projectCaption').value);
-        formData.append('materials_used', JSON.stringify([])); // Always empty for historical projects
+        formData.append('materials_used', JSON.stringify([]));
 
         const imageFiles = document.getElementById('decorationImages').files;
         for (let i = 0; i < imageFiles.length; i++) {
             formData.append('images', imageFiles[i]);
+        }
+
+        // Show image count in button for large uploads
+        if (imageFiles.length > 0) {
+            submitBtn.textContent = `Uploading ${imageFiles.length} image${imageFiles.length > 1 ? 's' : ''}...`;
         }
 
         try {
@@ -151,8 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            if (!response.ok) throw new Error('Failed to save project');
-            
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || 'Failed to save project');
+
             showToast.success('Project saved successfully!');
             addDecorationModal.classList.remove('open');
             addDecorationForm.reset();
@@ -160,6 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             showToast.error('Error saving project: ' + error.message);
+        } finally {
+            // Always restore button regardless of outcome
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            submitBtn.style.opacity = '';
         }
     };
 
