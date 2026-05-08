@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
+const https = require('https');
 
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/materials');
@@ -264,6 +265,24 @@ async function fixCloudinaryImageUrls() {
       console.log(`\n🚀 DecoVentory API Server running on port ${PORT}`);
       console.log(`   Local: http://localhost:${PORT}`);
       console.log(`   Environment: ${process.env.NODE_ENV || 'development'}\n`);
+
+      // ── Keep-alive self-ping (Render free tier spins down after 15 min idle) ──
+      // The RENDER env var is automatically set by Render on all deployments.
+      if (process.env.RENDER) {
+        const PING_URL = 'https://decoventory.onrender.com/';
+        const INTERVAL_MS = 14 * 60 * 1000; // 14 minutes
+
+        const ping = () => {
+          https.get(PING_URL, (res) => {
+            console.log(`[keep-alive] Pinged ${PING_URL} → ${res.statusCode}`);
+          }).on('error', (err) => {
+            console.warn(`[keep-alive] Ping failed: ${err.message}`);
+          });
+        };
+
+        setInterval(ping, INTERVAL_MS);
+        console.log(`⏰ Keep-alive cron active — pinging every 14 min to prevent Render sleep.\n`);
+      }
     });
   } catch (error) {
     console.error('Failed to start server:', error);
