@@ -723,8 +723,10 @@ function resetFilters() {
 }
 
 // Wire up all admin-link elements (desktop sidebar-footer + tablet nav)
-document.querySelectorAll('.admin-link').forEach(el => {
-    el.addEventListener('click', () => {
+// Use both the li and the a inside it for iOS Safari touch compatibility
+document.querySelectorAll('.admin-link, .admin-link > a, .admin-link a').forEach(el => {
+    el.addEventListener('click', (e) => {
+        e.preventDefault();
         if (localStorage.getItem('decoventory_role') === 'admin') {
             window.location.href = '/Admin/index.html';
         } else {
@@ -737,15 +739,19 @@ document.querySelectorAll('.admin-link').forEach(el => {
     });
 });
 
-// Wire up tablet logout button
+// Wire up tablet logout button — target both li and its anchor for iOS Safari
 const tabletLogoutBtn = document.getElementById('tabletLogoutBtn');
-if (tabletLogoutBtn) {
-    tabletLogoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('decoventory_role');
-        localStorage.removeItem('decoventory_token');
-        window.location.reload();
-    });
-}
+const tabletLogoutAnchor = tabletLogoutBtn ? tabletLogoutBtn.querySelector('a') : null;
+[tabletLogoutBtn, tabletLogoutAnchor].forEach(el => {
+    if (el) {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('decoventory_role');
+            localStorage.removeItem('decoventory_token');
+            window.location.reload();
+        });
+    }
+});
 
 // Auth Modal Listeners
 if (showLoginBtn) {

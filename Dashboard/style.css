@@ -754,11 +754,11 @@ body.dark-mode .details-secondary {
     }
 
     .sidebar-footer {
-        display: none;
+        display: none !important;
     }
 
     .settings {
-        display: none;
+        display: none !important;
     }
 
     .mainbar {

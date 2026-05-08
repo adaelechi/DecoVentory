@@ -421,8 +421,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Admin & Logout Handlers — wire up both desktop sidebar-footer and tablet nav items
-    document.querySelectorAll('.admin-link').forEach(el => {
-        el.addEventListener('click', () => {
+    // Target li AND anchor inside for iOS Safari touch compatibility
+    document.querySelectorAll('.admin-link, .admin-link > a, .admin-link a').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.preventDefault();
             if (localStorage.getItem('decoventory_role') === 'admin') {
                 window.location.href = '/Admin/index.html';
             } else {
@@ -441,13 +443,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const tabletLogoutBtn = document.getElementById('tabletLogoutBtn');
-    if (tabletLogoutBtn) {
-        tabletLogoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('decoventory_role');
-            localStorage.removeItem('decoventory_token');
-            window.location.reload();
-        });
-    }
+    const tabletLogoutAnchor = tabletLogoutBtn ? tabletLogoutBtn.querySelector('a') : null;
+    [tabletLogoutBtn, tabletLogoutAnchor].forEach(el => {
+        if (el) {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('decoventory_role');
+                localStorage.removeItem('decoventory_token');
+                window.location.reload();
+            });
+        }
+    });
 
     // Initial Load
     loadInventory();
