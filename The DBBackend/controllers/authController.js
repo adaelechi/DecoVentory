@@ -61,9 +61,11 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Auth: Login CRITICAL ERROR:', error);
+    // Return full error for debugging — remove after fixing
     res.status(500).json({ 
       error: 'Server error', 
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      debug_message: error.message,
+      debug_stack: error.stack
     });
   }
 };

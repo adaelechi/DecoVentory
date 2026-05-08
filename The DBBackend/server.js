@@ -70,6 +70,26 @@ app.get('/', (req, res) => {
   });
 });
 
+// ⚠️ TEMPORARY DEBUG ENDPOINT - Remove after fixing
+app.get('/api/debug/admins', async (req, res) => {
+  try {
+    const { query, isPostgres } = require('./database/database');
+    const sql = isPostgres 
+      ? 'SELECT id, role, active, created_at FROM admins' 
+      : 'SELECT id, role, active, created_at FROM admins';
+    const rows = await query(sql);
+    res.json({ 
+      ok: true, 
+      isPostgres,
+      JWT_SECRET_set: !!process.env.JWT_SECRET,
+      count: rows.length, 
+      admins: rows 
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message, stack: err.stack });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
