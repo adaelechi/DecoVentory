@@ -539,7 +539,7 @@ body.dark-mode #search-input {
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
-    z-index: 20;
+    z-index: 9999;
 }
 
 .details-modal.open {
@@ -550,7 +550,8 @@ body.dark-mode #search-input {
     position: absolute;
     inset: 0;
     background: var(--modal-backdrop);
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .details-modal__panel {
@@ -880,7 +881,7 @@ body.dark-mode input[type="file"] {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    z-index: 1000;
+    z-index: 9999;
     padding: 1.5rem;
 }
 
