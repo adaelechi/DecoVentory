@@ -67,6 +67,13 @@ async function loadPendingQuotes() {
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                localStorage.removeItem('decoventory_token');
+                localStorage.removeItem('decoventory_role');
+                showToast.error('Session expired. Please login again.');
+                setTimeout(() => window.location.href = './login.html', 2000);
+                return;
+            }
             if (response.status === 404) {
                 // If route not found, it means quotes aren't implemented yet in backend
                 quotesListContainer.innerHTML = '<p>No rent material requests found.</p>';
@@ -102,7 +109,7 @@ async function loadPendingQuotes() {
         `).join('');
     } catch (err) {
         console.error('Failed to load quotes', err);
-        quotesListContainer.innerHTML = '<p style="color:red;">Error loading requests.</p>';
+        quotesListContainer.innerHTML = '<p style="color:red;">Error loading requests. Please refresh or login again.</p>';
     }
 }
 
@@ -114,6 +121,13 @@ async function loadActivityLogs() {
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                // Already handled in loadPendingQuotes likely, but for safety:
+                localStorage.removeItem('decoventory_token');
+                localStorage.removeItem('decoventory_role');
+                window.location.href = './login.html';
+                return;
+            }
             throw new Error('Failed to load activity logs');
         }
         
@@ -150,7 +164,7 @@ async function loadActivityLogs() {
         `;
     } catch (err) {
         console.error('Failed to load activity logs', err);
-        activityLogsContainer.innerHTML = '<p style="color:red;">Error loading activity logs.</p>';
+        activityLogsContainer.innerHTML = '<p style="color:red;">Error loading activity logs. Please refresh.</p>';
     }
 }
 
@@ -216,8 +230,13 @@ window.updatePin = async function(role, inputId) {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadMaterialMap();
-    await loadPendingQuotes();
-    await loadActivityLogs();
-    revealPage();
+    try {
+        await loadMaterialMap();
+        await loadPendingQuotes();
+        await loadActivityLogs();
+    } catch (err) {
+        console.error('Error in Admin init:', err);
+    } finally {
+        revealPage();
+    }
 });

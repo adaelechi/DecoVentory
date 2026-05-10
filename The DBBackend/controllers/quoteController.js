@@ -7,8 +7,8 @@ exports.createQuote = async (req, res) => {
         const result = await QuoteRequest.create(req.body);
         res.status(201).json({ success: true, message: 'Quote request submitted', id: result.id });
     } catch (error) {
-        console.error('Error creating quote request:', error);
-        res.status(500).json({ error: 'Failed to create quote request' });
+        console.error('❌ Error creating quote request:', error.message, error.stack);
+        res.status(500).json({ error: 'Failed to create quote request', details: error.message });
     }
 };
 
@@ -17,8 +17,8 @@ exports.getQuotes = async (req, res) => {
         const quotes = await QuoteRequest.getAll();
         res.json(quotes);
     } catch (error) {
-        console.error('Error fetching quotes:', error);
-        res.status(500).json({ error: 'Failed to fetch quote requests' });
+        console.error('❌ Error fetching quotes:', error.message, error.stack);
+        res.status(500).json({ error: 'Failed to fetch quote requests', details: error.message });
     }
 };
 

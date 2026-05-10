@@ -248,11 +248,144 @@ async function fixCloudinaryImageUrls() {
   }
 }
 
+function ensureQuoteRequestsTable() {
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS quote_requests (
+        id SERIAL PRIMARY KEY,
+        recipient_name TEXT NOT NULL,
+        location TEXT NOT NULL,
+        event_date DATE NOT NULL,
+        items TEXT NOT NULL,
+        services TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS quote_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recipient_name TEXT NOT NULL,
+        location TEXT NOT NULL,
+        event_date TEXT NOT NULL,
+        items TEXT NOT NULL,
+        services TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
+      if (err) {
+        console.error('❌ Error ensuring quote_requests table:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function ensureAdminsTable() {
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS admins (
+        id SERIAL PRIMARY KEY,
+        passcode_hash TEXT NOT NULL,
+        role TEXT DEFAULT 'executive',
+        active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS admins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        passcode_hash TEXT NOT NULL,
+        role TEXT DEFAULT 'executive',
+        active INTEGER DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
+      if (err) {
+        console.error('❌ Error ensuring admins table:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function ensureActivityLogsTable() {
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS activity_logs (
+        id SERIAL PRIMARY KEY,
+        material_id INTEGER NOT NULL REFERENCES materials(id),
+        action_type TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        reference_id INTEGER,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS activity_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        material_id INTEGER NOT NULL,
+        action_type TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        reference_id INTEGER,
+        notes TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (material_id) REFERENCES materials(id)
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
+      if (err) {
+        console.error('❌ Error ensuring activity_logs table:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function ensureChapelLogsTable() {
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS chapel_logs (
+        id SERIAL PRIMARY KEY,
+        service_date DATE NOT NULL,
+        service_type TEXT NOT NULL,
+        materials_used TEXT NOT NULL,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS chapel_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        service_date TEXT NOT NULL,
+        service_type TEXT NOT NULL,
+        materials_used TEXT NOT NULL,
+        notes TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
+      if (err) {
+        console.error('❌ Error ensuring chapel_logs table:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 (async () => {
   try {
     await ensureMaterialsLocationColumn();
     await ensureMaterialLocationsTable();
     await ensureEventDecorationsColumns();
+    await ensureQuoteRequestsTable();
+    await ensureAdminsTable();
+    await ensureActivityLogsTable();
+    await ensureChapelLogsTable();
     await fixCloudinaryImageUrls();
 
     app.listen(PORT, () => {
