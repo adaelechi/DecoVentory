@@ -669,6 +669,14 @@ function bustMaterialsCache() {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+function revealDashboard() {
+    const mainbar = document.querySelector('.mainbar');
+    if (mainbar && mainbar.classList.contains('loading-opacity')) {
+        mainbar.classList.remove('loading-opacity');
+        mainbar.classList.add('fade-in');
+    }
+}
+
 async function loadDashboardData(bustCache = false) {
     if (bustCache) bustMaterialsCache();
 
@@ -678,6 +686,7 @@ async function loadDashboardData(bustCache = false) {
         allMaterials = cached;
         updateDashboardNumbers(cached);
         renderResources(applyCurrentFilters(cached));
+        revealDashboard();
     }
 
     // 2. Always fetch fresh data in the background
@@ -693,8 +702,10 @@ async function loadDashboardData(bustCache = false) {
         allMaterials = materials;
         updateDashboardNumbers(materials);
         renderResources(applyCurrentFilters(materials));
+        revealDashboard();
     } catch (error) {
         console.error('Error loading dashboard data:', error);
+        revealDashboard();
         // Only show error if we had nothing to show from cache
         if (!cached && resourceSection) {
             resourceSection.innerHTML = `<p class="error-message">Unable to connect to server. Please ensure the backend is running at ${API_BASE_URL}</p>`;
