@@ -297,18 +297,28 @@ a:any-link {
     padding: 1rem;
     background-color: var(--card-bg);
     box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .item-state {
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-align: center;
+    line-height: 1.2;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .numbers {
     font-size: 2.5rem;
     font-weight: 700;
     color: #C54344;
-    margin-top: 1rem;
+    margin-top: auto;
+    line-height: 1;
 }
 
 .filter-box {
