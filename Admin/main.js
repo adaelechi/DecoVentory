@@ -13,6 +13,14 @@ const quotesListContainer = document.getElementById('quotes-list-container');
 const activityLogsContainer = document.getElementById('activity-logs-container');
 let materialMap = {};
 
+function revealPage() {
+    const mainbar = document.querySelector('.mainbar');
+    if (mainbar && mainbar.classList.contains('loading-opacity')) {
+        mainbar.classList.remove('loading-opacity');
+        mainbar.classList.add('fade-in');
+    }
+}
+
 // Theme logic
 function applyTheme(isDark) {
     if (isDark) {
@@ -209,6 +217,7 @@ window.updatePin = async function(role, inputId) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadMaterialMap();
-    loadPendingQuotes();
-    loadActivityLogs();
+    await loadPendingQuotes();
+    await loadActivityLogs();
+    revealPage();
 });

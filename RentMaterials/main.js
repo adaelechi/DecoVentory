@@ -131,6 +131,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     // ─────────────────────────────────────────────────────────────────────────
 
+    function revealPage() {
+        const mainbar = document.querySelector('.mainbar');
+        if (mainbar && mainbar.classList.contains('loading-opacity')) {
+            mainbar.classList.remove('loading-opacity');
+            mainbar.classList.add('fade-in');
+        }
+    }
+
     // 3. Fetch Inventory
     async function loadInventory() {
         // 1. Render from cache immediately (feels instant)
@@ -138,6 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (cached) {
             inventory = cached.map(item => ({ ...item, price: resolvePrice(item) }));
             renderInventory();
+            revealPage();
         }
 
         // 2. Fetch fresh in background
@@ -150,11 +159,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 price: resolvePrice(item)
             }));
             renderInventory();
+            revealPage();
         } catch (error) {
             console.error('Failed to fetch inventory:', error);
             if (!cached) {
                 inventoryListEl.innerHTML = '<p style="color:red">Failed to load inventory. Please ensure the backend is running.</p>';
             }
+            revealPage();
         }
     }
 

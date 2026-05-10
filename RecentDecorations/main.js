@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         addDecorationBtn.style.display = 'grid';
     }
 
+    function revealPage() {
+        const mainbar = document.querySelector('.mainbar');
+        if (mainbar && mainbar.classList.contains('loading-opacity')) {
+            mainbar.classList.remove('loading-opacity');
+            mainbar.classList.add('fade-in');
+        }
+    }
+
     // Fetch and render projects
     async function fetchProjects() {
         try {
@@ -24,9 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('Failed to fetch projects');
             const projects = await response.json();
             renderGallery(projects);
+            revealPage();
         } catch (error) {
             console.error(error);
             galleryGrid.innerHTML = `<p class="error-message">Failed to load decorations. Please try again later.</p>`;
+            revealPage();
         }
     }
 
