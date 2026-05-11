@@ -5,6 +5,8 @@ const path = require('path');
 const multer = require('multer');
 const https = require('https');
 const compression = require('compression');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth');
 const materialRoutes = require('./routes/materials');
@@ -19,8 +21,31 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(helmet()); // Sets various security-related HTTP headers
 app.use(compression()); // gzip all responses — reduces payload size ~70%
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000', 
+    'https://cudecorationunit.com', 
+    'https://www.cudecorationunit.com', 
+    /\.vercel\.app$/, 
+    /\.onrender\.com$/
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Rate Limiting — prevents brute-force on auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 requests per windowMs
+  message: { error: 'Too many login attempts, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiter to auth routes
+app.use('/api/auth', authLimiter);
 // Skip body-parsing for multipart/form-data so Multer can read the stream cleanly
 const isNotMultipart = (req) => !(req.headers['content-type'] || '').includes('multipart/form-data');
 app.use((req, res, next) => { if (isNotMultipart(req)) express.json()(req, res, next); else next(); });
@@ -65,25 +90,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// ⚠️ TEMPORARY DEBUG ENDPOINT - Remove after fixing
-app.get('/api/debug/admins', async (req, res) => {
-  try {
-    const { query, isPostgres } = require('./database/database');
-    const sql = isPostgres 
-      ? 'SELECT id, role, active, created_at FROM admins' 
-      : 'SELECT id, role, active, created_at FROM admins';
-    const rows = await query(sql);
-    res.json({ 
-      ok: true, 
-      isPostgres,
-      JWT_SECRET_set: !!process.env.JWT_SECRET,
-      count: rows.length, 
-      admins: rows 
-    });
-  } catch (err) {
-    res.status(500).json({ ok: false, error: err.message, stack: err.stack });
-  }
-});
 
 // 404 handler
 app.use((req, res) => {

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /Admin/
+Disallow: /The DBBackend/
+
+Sitemap: https://cudecorationunit.com/sitemap.xml
