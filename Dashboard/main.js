@@ -883,8 +883,51 @@ if (detailsLocation) {
     detailsLocation.addEventListener('change', setCustomLocationVisibility);
 }
 
-if (detailsForm) {
-    detailsForm.addEventListener('submit', updateMaterialDetails);
+// Mobile Filter Drawer Logic
+const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+const closeFilterBtn = document.getElementById('closeFilterBtn');
+const filterBox = document.getElementById('filterBox');
+const filterBackdrop = document.getElementById('filterBackdrop');
+
+function toggleFilterDrawer(isOpen) {
+    if (!filterBox || !filterBackdrop) return;
+    
+    if (isOpen) {
+        filterBox.classList.add('active');
+        filterBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scroll
+    } else {
+        filterBox.classList.remove('active');
+        filterBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+if (mobileFilterBtn) {
+    mobileFilterBtn.addEventListener('click', () => toggleFilterDrawer(true));
+}
+
+if (closeFilterBtn) {
+    closeFilterBtn.addEventListener('click', () => toggleFilterDrawer(false));
+}
+
+if (filterBackdrop) {
+    filterBackdrop.addEventListener('click', () => toggleFilterDrawer(false));
+}
+
+// Auto-close drawer on apply or reset
+if (applyBtn) {
+    applyBtn.addEventListener('click', () => {
+        applyFilters();
+        if (window.innerWidth <= 600) toggleFilterDrawer(false);
+    });
+}
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+        resetFilters();
+        if (window.innerWidth <= 600) toggleFilterDrawer(false);
+    });
 }
 
 if (closeDetailsModal) {
