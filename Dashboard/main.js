@@ -847,8 +847,14 @@ if (execLoginForm) {
     });
 }
 
+// Unified Filter Listeners
 if (applyBtn) {
-    applyBtn.addEventListener('click', applyFilters);
+    applyBtn.addEventListener('click', () => {
+        applyFilters();
+        if (window.innerWidth <= 600 && typeof toggleFilterDrawer === 'function') {
+            toggleFilterDrawer(false);
+        }
+    });
 }
 
 if (categorySelect) {
@@ -915,18 +921,12 @@ if (filterBackdrop) {
     filterBackdrop.addEventListener('click', () => toggleFilterDrawer(false));
 }
 
-// Auto-close drawer on apply or reset
-if (applyBtn) {
-    applyBtn.addEventListener('click', () => {
-        applyFilters();
-        if (window.innerWidth <= 600) toggleFilterDrawer(false);
-    });
-}
-
 if (resetBtn) {
     resetBtn.addEventListener('click', () => {
         resetFilters();
-        if (window.innerWidth <= 600) toggleFilterDrawer(false);
+        if (window.innerWidth <= 600 && typeof toggleFilterDrawer === 'function') {
+            toggleFilterDrawer(false);
+        }
     });
 }
 

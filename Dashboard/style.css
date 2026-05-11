@@ -702,6 +702,18 @@ body.dark-mode .details-secondary {
     display: none !important;
 }
 
+.mobile-filter-trigger {
+    display: none;
+}
+
+.filter-header-mobile {
+    display: none;
+}
+
+.filter-backdrop {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     .details-grid {
         grid-template-columns: 1fr;
@@ -947,18 +959,6 @@ body.dark-mode .details-secondary {
     .resource-grid {
         grid-template-columns: 1fr;
     }
-}
-
-.mobile-filter-trigger {
-    display: none;
-}
-
-.filter-header-mobile {
-    display: none;
-}
-
-.filter-backdrop {
-    display: none;
 }
 
 /* Location Entry Styling */
