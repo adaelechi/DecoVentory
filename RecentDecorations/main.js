@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryGrid.innerHTML = projects.map(project => {
             const mainImage = project.images && project.images.length > 0 
                 ? getImageUrl(project.images[0])
-                : '../assets/placeholder-decoration.jpg'; // Need a placeholder
+                : '/assets/placeholder-decoration.jpg'; // Need a placeholder
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {
                 month: 'short',
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
                 <div class="gallery-item" onclick="openProjectDetails(${JSON.stringify(project).replace(/"/g, '&quot;')})">
-                    <img src="${mainImage}" alt="${project.event_name}" onerror="this.src='../assets/logo.jpeg'">
+                    <img src="${mainImage}" alt="${project.event_name}" onerror="this.src='/assets/logo.jpeg'">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
                             <p class="date">
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextBtn.onclick = () => carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
             }
         } else {
-            carousel.innerHTML = `<img src="../assets/logo.jpeg" alt="No image available">`;
+            carousel.innerHTML = `<img src="/assets/logo.jpeg" alt="No image available">`;
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
         }
