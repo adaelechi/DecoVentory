@@ -184,3 +184,37 @@ body.dark-mode .quote-card-actions .btn-secondary:hover {
     transform: none !important;
     box-shadow: none !important;
 }
+
+/* Decoration Admin Styles */
+.decoration-admin-card {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 1rem 1.5rem !important;
+}
+
+.delete-btn-minimal {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-btn-minimal:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #ef4444;
+    transform: scale(1.05);
+}
+
+body.dark-mode .delete-btn-minimal:hover {
+    background: rgba(239, 68, 68, 0.1);
+}

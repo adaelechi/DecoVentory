@@ -235,9 +235,65 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadMaterialMap();
         await loadPendingQuotes();
         await loadActivityLogs();
+        await loadDecorations();
     } catch (err) {
         console.error('Error in Admin init:', err);
     } finally {
         revealPage();
     }
 });
+
+const decorationsContainer = document.getElementById('decorations-management-container');
+
+async function loadDecorations() {
+    if (!decorationsContainer) return;
+    try {
+        const response = await fetch(`${API_BASE_URL}/events`);
+        if (!response.ok) throw new Error('Failed to fetch decorations');
+        const projects = await response.json();
+        
+        if (projects.length === 0) {
+            decorationsContainer.innerHTML = '<p>No decorations found.</p>';
+            return;
+        }
+
+        decorationsContainer.innerHTML = projects.map(project => {
+            const date = new Date(project.event_date).toLocaleDateString();
+            const imageCount = project.images ? project.images.length : 0;
+            
+            return `
+                <div class="resource-card decoration-admin-card">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 1.1rem;">${project.event_name}</h3>
+                        <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${project.venue} — ${date}</p>
+                        <p style="margin: 0; font-size: 0.8rem; font-weight: 600;">${imageCount} Photos</p>
+                    </div>
+                    <button class="delete-btn-minimal" onclick="deleteDecoration(${project.id}, '${project.event_name}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Failed to load decorations', err);
+        decorationsContainer.innerHTML = '<p style="color:red;">Error loading decorations.</p>';
+    }
+}
+
+window.deleteDecoration = async function(id, name) {
+    if (!confirm(`Are you sure you want to delete "${name}"? This will also remove its photos from Cloudinary. This action cannot be undone.`)) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/events/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (!response.ok) throw new Error('Failed to delete decoration');
+        
+        showToast.success(`"${name}" deleted successfully`);
+        loadDecorations(); // Refresh list
+    } catch (err) {
+        showToast.error(err.message);
+    }
+};

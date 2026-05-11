@@ -169,11 +169,49 @@ exports.markEventReturned = (req, res) => {
 };
 
 exports.deleteEvent = (req, res) => {
-  EventDecoration.delete(req.params.id, (err) => {
+  const eventId = req.params.id;
+
+  // 1. Fetch the event first to get image URLs for Cloudinary cleanup
+  EventDecoration.getById(eventId, (err, event) => {
     if (err) {
-      return res.status(500).json({ error: 'Failed to delete event' });
+      return res.status(500).json({ error: 'Failed to fetch event for deletion' });
+    }
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
     }
 
-    res.json({ success: true, message: 'Event deleted successfully' });
+    const images = event.images ? JSON.parse(event.images) : [];
+
+    // 2. Delete images from Cloudinary if configured
+    if (process.env.CLOUDINARY_CLOUD_NAME && images.length > 0) {
+      const cloudinary = require('../config/cloudinary').cloudinary;
+      
+      images.forEach(imgUrl => {
+        if (imgUrl.includes('cloudinary.com')) {
+          // Extract public_id from URL
+          // Example: https://res.cloudinary.com/dbnuegesq/image/upload/v123/decoventory/decorations/123-456.jpg
+          const parts = imgUrl.split('/');
+          const filenameWithExt = parts.pop();
+          const filename = filenameWithExt.split('.')[0];
+          
+          // Reconstruct path: decoventory/decorations/filename
+          const publicId = `decoventory/decorations/${filename}`;
+          
+          cloudinary.uploader.destroy(publicId, (error, result) => {
+            if (error) console.error(`[Cloudinary] Failed to delete image ${publicId}:`, error);
+            else console.log(`[Cloudinary] Deleted image: ${publicId}`);
+          });
+        }
+      });
+    }
+
+    // 3. Delete from database
+    EventDecoration.delete(eventId, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to delete event from database' });
+      }
+
+      res.json({ success: true, message: 'Event and associated images deleted successfully' });
+    });
   });
 };
