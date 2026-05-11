@@ -151,7 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 2. Fetch fresh in background
         try {
-            const response = await fetch(`${API_BASE_URL}/materials`);
+            // Always bust background fetch to ensure RentMaterials is accurate
+            const response = await fetch(`${API_BASE_URL}/materials?t=${Date.now()}`);
             const data = await response.json();
             setCachedMaterials(data);
             inventory = data.map(item => ({

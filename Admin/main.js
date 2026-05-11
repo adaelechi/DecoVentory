@@ -47,7 +47,8 @@ if (toggleTheme) {
 // Fetch material names map
 async function loadMaterialMap() {
     try {
-        const response = await fetch(`${API_BASE_URL}/materials`);
+        // Ensure Admin view always has fresh material names for activity logs
+        const response = await fetch(`${API_BASE_URL}/materials?t=${Date.now()}`);
         const materials = await response.json();
         if (Array.isArray(materials)) {
             materials.forEach(m => {

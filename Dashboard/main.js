@@ -691,7 +691,12 @@ async function loadDashboardData(bustCache = false) {
 
     // 2. Always fetch fresh data in the background
     try {
-        const response = await fetch(`${API_BASE_URL}/materials`);
+        // Add cache-busting timestamp if requested
+        const url = bustCache 
+            ? `${API_BASE_URL}/materials?t=${Date.now()}` 
+            : `${API_BASE_URL}/materials`;
+
+        const response = await fetch(url);
         const materials = await response.json();
 
         if (!Array.isArray(materials)) {
