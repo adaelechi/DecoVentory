@@ -1145,6 +1145,12 @@ body.dark-mode .input-group label {
     transition: background 0.2s;
 }
 
+.logout-link .item-svg, .settings .item-svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
 .logout-link:hover {
     background: rgba(197, 67, 68, 0.1);
 }
