@@ -22,6 +22,55 @@
     .quote-preview-panel {
         min-height: 50vh;
     }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.2rem;
+    }
+
+    .item-controls {
+        width: 100%;
+        justify-content: space-between;
+        height: 40px;
+    }
+
+    .qty-btn {
+        flex: 1;
+        height: 100%;
+    }
+
+    .qty-input {
+        flex: 2;
+        height: 100%;
+    }
+
+    .quote-document {
+        padding: 1.2rem;
+        font-size: 10pt;
+    }
+
+    .quote-table {
+        font-size: 8.5pt;
+    }
+
+    .quote-doc-header .doc-logo {
+        width: 60px;
+    }
+
+    .quote-header-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quote-header-actions h3 {
+        margin-bottom: 0.5rem;
+    }
 }
 
 .selection-panel {
