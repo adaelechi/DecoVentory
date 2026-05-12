@@ -173,12 +173,44 @@ exports.updateMaterial = (req, res) => {
 };
 
 exports.deleteMaterial = (req, res) => {
-  Material.delete(req.params.id, (err) => {
+  const materialId = req.params.id;
+
+  // 1. Fetch the material first to get image URL for Cloudinary cleanup
+  Material.getById(materialId, (err, material) => {
     if (err) {
-      return res.status(500).json({ error: 'Failed to delete material' });
+      return res.status(500).json({ error: 'Failed to fetch material for deletion' });
+    }
+    if (!material) {
+      return res.status(404).json({ error: 'Material not found' });
     }
 
-    res.json({ success: true, message: 'Material deleted successfully' });
+    // 2. Delete image from Cloudinary if configured
+    if (process.env.CLOUDINARY_CLOUD_NAME && material.image_url && material.image_url.includes('cloudinary.com')) {
+      const cloudinary = require('../config/cloudinary').cloudinary;
+      
+      // Extract public_id from URL
+      // Example: https://res.cloudinary.com/dbnuegesq/image/upload/v123/decoventory/materials/123-456.jpg
+      const parts = material.image_url.split('/');
+      const filenameWithExt = parts.pop();
+      const filename = filenameWithExt.split('.')[0];
+      
+      // Reconstruct path: decoventory/materials/filename
+      const publicId = `decoventory/materials/${filename}`;
+      
+      cloudinary.uploader.destroy(publicId, (error, result) => {
+        if (error) console.error(`[Cloudinary] Failed to delete image ${publicId}:`, error);
+        else console.log(`[Cloudinary] Deleted image: ${publicId}`);
+      });
+    }
+
+    // 3. Delete from database
+    Material.delete(materialId, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to delete material from database' });
+      }
+
+      res.json({ success: true, message: 'Material and associated image deleted successfully' });
+    });
   });
 };
 

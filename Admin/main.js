@@ -235,6 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadMaterialMap();
         await loadPendingQuotes();
         await loadActivityLogs();
+        await loadMaterials();
         await loadDecorations();
     } catch (err) {
         console.error('Error in Admin init:', err);
@@ -242,6 +243,59 @@ document.addEventListener('DOMContentLoaded', async () => {
         revealPage();
     }
 });
+
+const materialsContainer = document.getElementById('materials-management-container');
+
+async function loadMaterials() {
+    if (!materialsContainer) return;
+    try {
+        // Fetch fresh materials to ensure we see everything
+        const response = await fetch(`${API_BASE_URL}/materials?t=${Date.now()}`);
+        if (!response.ok) throw new Error('Failed to fetch materials');
+        const materials = await response.json();
+        
+        if (materials.length === 0) {
+            materialsContainer.innerHTML = '<p>No materials found in inventory.</p>';
+            return;
+        }
+
+        materialsContainer.innerHTML = materials.map(m => {
+            const sizeInfo = m.size ? `(${m.size})` : '';
+            return `
+                <div class="resource-card decoration-admin-card">
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0; font-size: 1.1rem;">${m.name} ${sizeInfo}</h3>
+                        <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${m.category} — ${m.total_quantity} total</p>
+                    </div>
+                    <button class="delete-btn-minimal" onclick="deleteMaterial(${m.id}, '${m.name}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Failed to load materials', err);
+        materialsContainer.innerHTML = '<p style="color:red;">Error loading materials.</p>';
+    }
+}
+
+window.deleteMaterial = async function(id, name) {
+    if (!confirm(`Are you sure you want to delete "${name}" from inventory? This will also remove its photo. This action cannot be undone.`)) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/materials/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        
+        if (!response.ok) throw new Error('Failed to delete material');
+        
+        showToast.success(`"${name}" removed from inventory`);
+        loadMaterials(); // Refresh list
+    } catch (err) {
+        showToast.error(err.message);
+    }
+};
 
 const decorationsContainer = document.getElementById('decorations-management-container');
 
