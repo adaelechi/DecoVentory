@@ -31,6 +31,8 @@ const cancelDetailsUpdate = document.getElementById('cancelDetailsUpdate');
 //tt
 let allMaterials = [];
 let selectedMaterial = null;
+let currentPage = 1;
+const itemsPerPage = 20;
 
 const welcomeModal = document.getElementById('welcomeModal');
 const authModal = document.getElementById('authModal');
@@ -313,12 +315,26 @@ function renderResources(materials) {
 
     if (!materials.length) {
         resourceSection.innerHTML = '<p class="no-resources">No resources found. Add your first resource!</p>';
+        const paginationContainer = document.getElementById('pagination-controls');
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
+    // Pagination Logic
+    const totalItems = materials.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Safety check for currentPage
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+    if (currentPage < 1) currentPage = 1;
+    
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pagedMaterials = materials.slice(start, end);
+
     const canEditDetails = Boolean(authToken) && userRole !== 'viewer';
 
-    resourceSection.innerHTML = materials.map(material => `
+    resourceSection.innerHTML = pagedMaterials.map(material => `
         <div class="resource-card">
             ${material.image_url ? `<img src="${getImageUrl(material.image_url)}" alt="${material.name}" class="resource-image">` : '<div class="no-image">📦</div>'}
             <h3>${material.name}</h3>
@@ -339,6 +355,42 @@ function renderResources(materials) {
             ` : ''}
         </div>
     `).join('');
+
+    renderPaginationControls(totalItems, totalPages);
+}
+
+function renderPaginationControls(totalItems, totalPages) {
+    const container = document.getElementById('pagination-controls');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = `
+        <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(-1)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Prev
+        </button>
+        <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+        <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(1)">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+    `;
+}
+
+window.changePage = function(delta) {
+    currentPage += delta;
+    renderResources(applyCurrentFilters());
+    
+    // Scroll resources into view on mobile
+    if (window.innerWidth <= 600) {
+        resourceSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
 
 function setCustomLocationVisibility() {
@@ -719,6 +771,7 @@ async function loadDashboardData(bustCache = false) {
 }
 
 function applyFilters() {
+    currentPage = 1; // Reset to first page on filter
     renderResources(applyCurrentFilters());
 }
 

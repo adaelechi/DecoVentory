@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. State & Variables
     let inventory = [];
     let cart = {}; // itemId -> quantity
+    let currentPage = 1;
+    const itemsPerPage = 15; // Slightly fewer per page since they are in a sidebar-like panel
     
     // Fixed services matching the quotation
     const services = {
@@ -174,10 +176,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderInventory() {
         if (inventory.length === 0) {
             inventoryListEl.innerHTML = '<p>No items found in inventory.</p>';
+            const paginationContainer = document.getElementById('pagination-controls');
+            if (paginationContainer) paginationContainer.innerHTML = '';
             return;
         }
 
-        inventoryListEl.innerHTML = inventory.map(item => {
+        // Pagination Logic
+        const totalItems = inventory.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        if (currentPage > totalPages) currentPage = totalPages || 1;
+        if (currentPage < 1) currentPage = 1;
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pagedInventory = inventory.slice(start, end);
+
+        inventoryListEl.innerHTML = pagedInventory.map(item => {
             const available = item.available_quantity || 0;
             const isOutOfStock = available <= 0;
             
@@ -203,8 +218,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
         }).join('');
 
+        renderPaginationControls(totalItems, totalPages);
+        
         // Attach listeners to newly created buttons
         attachQuantityListeners();
+    }
+
+    function renderPaginationControls(totalItems, totalPages) {
+        const container = document.getElementById('pagination-controls');
+        if (!container) return;
+
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = `
+            <button type="button" class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} id="prevPageBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Prev
+            </button>
+            <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+            <button type="button" class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} id="nextPageBtn">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        `;
+
+        document.getElementById('prevPageBtn')?.addEventListener('click', () => changePage(-1));
+        document.getElementById('nextPageBtn')?.addEventListener('click', () => changePage(1));
+    }
+
+    function changePage(delta) {
+        currentPage += delta;
+        renderInventory();
+        
+        // Scroll inventory panel to top
+        const panel = document.querySelector('.selection-panel');
+        if (panel) panel.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // 5. Handle Quantity Changes
