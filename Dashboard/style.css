@@ -516,6 +516,8 @@ body.dark-mode #search-input {
     transition: all 0.2s;
     overflow: hidden;
     box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
 }
 
 .resource-card:hover {
@@ -569,7 +571,8 @@ body.dark-mode #search-input {
 .resource-card-actions {
     display: flex;
     gap: 0.75rem;
-    margin-top: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
 }
 
 .details-btn {
