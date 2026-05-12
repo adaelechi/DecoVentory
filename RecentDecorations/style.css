@@ -290,16 +290,7 @@
     margin-top: 0.25rem;
 }
 
-/* Sidebar Active State */
-.sidebar_list li.active {
-    background-color: var(--deco-red-muted);
-    border-color: var(--deco-red);
-}
-
-.sidebar_list li.active .item-name {
-    color: var(--deco-red);
-    font-weight: 700;
-}
+/* Sidebar Active State moved to global style.css */
 
 /* Responsive */
 @media (max-width: 600px) {

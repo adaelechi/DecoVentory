@@ -225,6 +225,22 @@ a:any-link {
     background-color: var(--deco-red-muted);
 }
 
+/* Sidebar Active State */
+.sidebar_list li.active {
+    background-color: var(--deco-red-muted);
+    border-color: var(--deco-red);
+}
+
+.sidebar_list li.active .item-name {
+    color: var(--deco-red);
+    font-weight: 700;
+}
+
+.sidebar_list li.active .item-svg {
+    stroke: var(--deco-red);
+    color: var(--deco-red);
+}
+
 .item-svg {
     display: flex;
     flex-wrap: wrap;
