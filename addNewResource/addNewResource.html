@@ -182,6 +182,13 @@
                                     accept=".jpg,.jpeg,.png,.webp"
                                     hidden
                                 >
+                                <input 
+                                    type="file" 
+                                    id="cameraInput" 
+                                    accept="image/*" 
+                                    capture="environment" 
+                                    hidden
+                                >
                             </div>
                             <div id="imagePreview" class="image-preview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
@@ -198,6 +205,34 @@
             </div>
         </section>
     </main>
+
+    <!-- Photo Choice Modal -->
+    <div id="photoChoiceModal" class="choice-modal">
+        <div class="choice-modal-backdrop" id="modalBackdrop"></div>
+        <div class="choice-modal-content">
+            <div class="choice-header">
+                <h3>Select Image Source</h3>
+                <button class="close-choice-btn" id="closeChoiceModal">✕</button>
+            </div>
+            <div class="choice-options">
+                <button class="choice-option-btn" id="cameraOption">
+                    <div class="option-icon">📷</div>
+                    <div class="option-text">
+                        <span class="option-title">Take Photo</span>
+                        <span class="option-desc">Use your camera to snap a picture</span>
+                    </div>
+                </button>
+                <button class="choice-option-btn" id="galleryOption">
+                    <div class="option-icon">🖼️</div>
+                    <div class="option-text">
+                        <span class="option-title">Choose from Gallery</span>
+                        <span class="option-desc">Pick an existing image from your device</span>
+                    </div>
+                </button>
+            </div>
+            <button class="choice-cancel-btn" id="cancelChoice">Cancel</button>
+        </div>
+    </div>
 
     <script src="/assets/toast.js"></script>
     <script src="/api.js"></script>

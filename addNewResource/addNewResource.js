@@ -150,12 +150,47 @@ typeBtns.forEach(btn => {
 // File upload functionality
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
+const cameraInput = document.getElementById('cameraInput');
 const imagePreview = document.getElementById('imagePreview');
 const previewImg = document.getElementById('previewImg');
 const removeImageBtn = document.getElementById('removeImage');
 
+// Choice Modal Elements
+const photoChoiceModal = document.getElementById('photoChoiceModal');
+const cameraOption = document.getElementById('cameraOption');
+const galleryOption = document.getElementById('galleryOption');
+const closeChoiceModal = document.getElementById('closeChoiceModal');
+const cancelChoice = document.getElementById('cancelChoice');
+const modalBackdrop = document.getElementById('modalBackdrop');
+
+let currentSelectedFile = null;
+
+function openChoiceModal() {
+    photoChoiceModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeChoiceModalFunc() {
+    photoChoiceModal.classList.remove('open');
+    document.body.style.overflow = 'auto';
+}
+
 uploadArea.addEventListener('click', () => {
+    openChoiceModal();
+});
+
+closeChoiceModal.addEventListener('click', closeChoiceModalFunc);
+cancelChoice.addEventListener('click', closeChoiceModalFunc);
+modalBackdrop.addEventListener('click', closeChoiceModalFunc);
+
+cameraOption.addEventListener('click', () => {
+    cameraInput.click();
+    closeChoiceModalFunc();
+});
+
+galleryOption.addEventListener('click', () => {
     fileInput.click();
+    closeChoiceModalFunc();
 });
 
 // Drag and drop
@@ -187,6 +222,12 @@ fileInput.addEventListener('change', (e) => {
     }
 });
 
+cameraInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
 function handleFile(file) {
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     
@@ -194,6 +235,8 @@ function handleFile(file) {
         showToast.error('Please upload a valid image file (JPG, PNG, or WEBP)');
         return;
     }
+    
+    currentSelectedFile = file;
     
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -207,6 +250,8 @@ function handleFile(file) {
 removeImageBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     fileInput.value = '';
+    cameraInput.value = '';
+    currentSelectedFile = null;
     previewImg.src = '';
     uploadArea.style.display = 'block';
     imagePreview.style.display = 'none';
@@ -281,8 +326,8 @@ addResourceBtn.addEventListener('click', async (e) => {
     formData.append('locations', JSON.stringify(locations));
     
     // Add image if selected
-    if (fileInput.files.length > 0) {
-        formData.append('image', fileInput.files[0]);
+    if (currentSelectedFile) {
+        formData.append('image', currentSelectedFile);
     }
 
     // Show loading state
