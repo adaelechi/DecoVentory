@@ -73,6 +73,45 @@
     }
 }
 
+@media (max-width: 480px) {
+    .main-section {
+        padding: 1rem 0.8rem;
+    }
+
+    .selection-panel {
+        padding: 1rem;
+    }
+
+    .quote-document {
+        padding: 0.8rem;
+        font-size: 9pt;
+    }
+
+    .quote-table {
+        font-size: 7pt;
+        margin: 1rem 0;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .quote-table th, .quote-table td {
+        padding: 0.2rem;
+    }
+
+    .quote-doc-header h2 {
+        font-size: 13pt;
+    }
+
+    .quote-doc-header .doc-logo {
+        width: 50px;
+    }
+
+    .doc-body {
+        margin-top: 1.2rem;
+    }
+}
+
 .selection-panel {
     background: var(--card-bg);
     border-radius: 12px;
