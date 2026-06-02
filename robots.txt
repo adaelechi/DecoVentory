@@ -3,4 +3,4 @@ Allow: /
 Disallow: /Admin/
 Disallow: /The DBBackend/
 
-Sitemap: https://cudecorationunit.com/sitemap.xml
+Sitemap: https://cudecorationunit.com.ng/sitemap.xml

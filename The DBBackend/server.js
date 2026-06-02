@@ -26,6 +26,8 @@ app.use(compression()); // gzip all responses — reduces payload size ~70%
 app.use(cors({
   origin: [
     'http://localhost:3000', 
+    'https://cudecorationunit.com.ng', 
+    'https://www.cudecorationunit.com.ng', 
     'https://cudecorationunit.com', 
     'https://www.cudecorationunit.com', 
     /\.vercel\.app$/, 
