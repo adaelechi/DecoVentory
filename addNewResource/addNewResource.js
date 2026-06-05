@@ -368,8 +368,21 @@ addResourceBtn.addEventListener('click', async (e) => {
 // Role Check & Sidebar Handlers
 const userRole = localStorage.getItem('decoventory_role');
 const sidebarFooter = document.querySelector('.sidebar-footer');
-if (userRole === 'viewer' && sidebarFooter) {
-    sidebarFooter.style.display = 'none';
+if (userRole === 'viewer') {
+    // Hide Admin link in footer but keep footer visible
+    const adminLink = document.querySelector('.sidebar-footer .settings');
+    if (adminLink) adminLink.style.display = 'none';
+    
+    // Change Logout to Login in sidebar footer
+    const logoutSpan = document.querySelector('#logoutBtn .item-name');
+    if (logoutSpan) {
+        logoutSpan.textContent = 'Login';
+        logoutSpan.style.color = 'var(--text-primary)';
+    }
+    const logoutSvg = document.querySelector('#logoutBtn svg');
+    if (logoutSvg) {
+        logoutSvg.innerHTML = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>';
+    }
 }
 
 const adminLink = document.querySelector('.admin-link');

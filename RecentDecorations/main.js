@@ -211,9 +211,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Role Check for Sidebar Footer
     const sidebarFooter = document.querySelector('.sidebar-footer');
     if (role === 'viewer') {
-        if (sidebarFooter) sidebarFooter.style.display = 'none';
-        // Also hide tablet nav admin items for viewer
-        document.querySelectorAll('.tablet-nav-admin').forEach(el => el.style.display = 'none');
+        // Hide Admin link in footer but keep footer visible
+        const adminLink = document.querySelector('.sidebar-footer .settings');
+        if (adminLink) adminLink.style.display = 'none';
+        
+        // Change Logout to Login in sidebar footer
+        const logoutSpan = document.querySelector('#logoutBtn .item-name');
+        if (logoutSpan) {
+            logoutSpan.textContent = 'Login';
+            logoutSpan.style.color = 'var(--text-primary)';
+        }
+        const logoutSvg = document.querySelector('#logoutBtn svg');
+        if (logoutSvg) {
+            logoutSvg.innerHTML = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>';
+        }
+
+        // Handle tablet nav: Hide Admin link but show Login button
+        const tabletAdminLink = document.querySelector('.tablet-nav-admin.admin-link');
+        if (tabletAdminLink) tabletAdminLink.style.display = 'none';
+        
+        const tabletLogoutLink = document.getElementById('tabletLogoutBtn');
+        if (tabletLogoutLink) {
+            tabletLogoutLink.style.display = 'flex';
+            const tabletLogoutSpan = tabletLogoutLink.querySelector('.item-name');
+            if (tabletLogoutSpan) {
+                tabletLogoutSpan.textContent = 'Login';
+                tabletLogoutSpan.style.color = 'var(--text-primary)';
+            }
+            const tabletLogoutSvg = tabletLogoutLink.querySelector('svg');
+            if (tabletLogoutSvg) {
+                tabletLogoutSvg.innerHTML = '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>';
+            }
+        }
     }
 
     // Admin & Logout Handlers — wire up both desktop and tablet nav items

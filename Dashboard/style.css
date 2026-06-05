@@ -789,11 +789,13 @@ body.dark-mode .details-secondary {
     .sidebar {
         position: fixed;
         bottom: 0;
+        bottom: env(safe-area-inset-bottom, 0);
         left: 0;
         top: auto;
         width: 100%;
         height: 5rem;
         padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0);
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -802,6 +804,10 @@ body.dark-mode .details-secondary {
         border-right: none;
         z-index: 100;
         background-color: var(--sidebar-bg);
+        grid-area: unset;
+        transform: translate3d(0, 0, 0);
+        -webkit-transform: translate3d(0, 0, 0);
+        will-change: transform;
     }
 
     .sidebar h2 {
