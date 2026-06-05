@@ -534,7 +534,7 @@ body.dark-mode .btn-secondary:hover {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     main {
         grid-template-areas: "mainbar";
         grid-template-columns: 1fr;
