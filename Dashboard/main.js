@@ -1012,6 +1012,10 @@ if (resetBtn) {
     });
 }
 
+if (detailsForm) {
+    detailsForm.addEventListener('submit', updateMaterialDetails);
+}
+
 if (closeDetailsModal) {
     closeDetailsModal.addEventListener('click', closeDetailsModalFn);
 }
