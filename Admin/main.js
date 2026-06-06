@@ -12,6 +12,41 @@ const sliderTheme = document.querySelector('.slider');
 const quotesListContainer = document.getElementById('quotes-list-container');
 const activityLogsContainer = document.getElementById('activity-logs-container');
 let materialMap = {};
+let allMaterials = [];
+let filteredMaterials = [];
+let materialCurrentPage = 1;
+
+let allDecorations = [];
+let filteredDecorations = [];
+let decorationCurrentPage = 1;
+
+let allActivityLogs = [];
+let filteredActivityLogs = [];
+let activityLogCurrentPage = 1;
+
+const itemsPerPage = 10;
+
+function renderPaginationControls(containerId, currentPage, totalPages, changePageFuncName) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = `
+        <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="${changePageFuncName}(-1)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Prev
+        </button>
+        <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+        <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="${changePageFuncName}(1)">
+            Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+    `;
+}
 
 function revealPage() {
     const mainbar = document.querySelector('.mainbar');
@@ -114,7 +149,11 @@ async function loadPendingQuotes() {
     }
 }
 
-// Load Activity Logs
+window.changeActivityLogPage = function(delta) {
+    activityLogCurrentPage += delta;
+    renderActivityLogsList();
+};
+
 async function loadActivityLogs() {
     try {
         const response = await fetch(`${API_BASE_URL}/activity-logs`, {
@@ -132,41 +171,87 @@ async function loadActivityLogs() {
             throw new Error('Failed to load activity logs');
         }
         
-        const logs = await response.json();
+        allActivityLogs = await response.json();
         
-        if (logs.length === 0) {
-            activityLogsContainer.innerHTML = '<p>No recent activity logs.</p>';
-            return;
+        // Dynamically populate action types in filter dropdown
+        const actions = [...new Set(allActivityLogs.map(log => log.action_type.toUpperCase()))];
+        const actionFilter = document.getElementById('activity-action-filter');
+        if (actionFilter) {
+            actionFilter.innerHTML = '<option value="all">All Actions</option>' + 
+                actions.map(act => `<option value="${act}">${act}</option>`).join('');
         }
 
-        activityLogsContainer.innerHTML = `
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                        <th>Material</th>
-                        <th>Quantity</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${logs.map(log => `
-                        <tr>
-                            <td>${new Date(log.created_at).toLocaleString()}</td>
-                            <td><strong>${log.action_type.toUpperCase()}</strong></td>
-                            <td>${materialMap[log.material_id] || 'ID: ' + log.material_id}</td>
-                            <td>${log.quantity}</td>
-                            <td>${log.notes || '-'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        activityLogCurrentPage = 1;
+        filterActivityLogs();
     } catch (err) {
         console.error('Failed to load activity logs', err);
         activityLogsContainer.innerHTML = '<p style="color:red;">Error loading activity logs. Please refresh.</p>';
     }
+}
+
+function filterActivityLogs() {
+    const searchInput = document.getElementById('activity-search-input');
+    const actionFilter = document.getElementById('activity-action-filter');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const action = actionFilter ? actionFilter.value : 'all';
+
+    filteredActivityLogs = allActivityLogs.filter(log => {
+        const materialName = materialMap[log.material_id] || 'ID: ' + log.material_id;
+        const notes = log.notes || '';
+        const matchesSearch = materialName.toLowerCase().includes(query) || notes.toLowerCase().includes(query);
+        const matchesAction = action === 'all' || log.action_type.toUpperCase() === action;
+        return matchesSearch && matchesAction;
+    });
+
+    renderActivityLogsList();
+}
+
+function renderActivityLogsList() {
+    if (!activityLogsContainer) return;
+
+    if (filteredActivityLogs.length === 0) {
+        activityLogsContainer.innerHTML = '<p>No activity logs found matching criteria.</p>';
+        const paginationContainer = document.getElementById('activity-logs-pagination');
+        if (paginationContainer) paginationContainer.innerHTML = '';
+        return;
+    }
+
+    const totalItems = filteredActivityLogs.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (activityLogCurrentPage > totalPages) activityLogCurrentPage = totalPages;
+    if (activityLogCurrentPage < 1) activityLogCurrentPage = 1;
+
+    const start = (activityLogCurrentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pagedLogs = filteredActivityLogs.slice(start, end);
+
+    activityLogsContainer.innerHTML = `
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${pagedLogs.map(log => `
+                    <tr>
+                        <td>${new Date(log.created_at).toLocaleString()}</td>
+                        <td><strong>${log.action_type.toUpperCase()}</strong></td>
+                        <td>${materialMap[log.material_id] || 'ID: ' + log.material_id}</td>
+                        <td>${log.quantity}</td>
+                        <td>${log.notes || '-'}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    renderPaginationControls('activity-logs-pagination', activityLogCurrentPage, totalPages, 'changeActivityLogPage');
 }
 
 window.approveQuote = async function(id) {
@@ -237,6 +322,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadActivityLogs();
         await loadMaterials();
         await loadDecorations();
+        
+        // Wire up input search/filter listeners
+        const resourceSearch = document.getElementById('resource-search-input');
+        const resourceFilter = document.getElementById('resource-category-filter');
+        const decorationSearch = document.getElementById('decoration-search-input');
+        const activitySearch = document.getElementById('activity-search-input');
+        const activityFilter = document.getElementById('activity-action-filter');
+
+        if (resourceSearch) resourceSearch.addEventListener('input', () => { materialCurrentPage = 1; filterMaterials(); });
+        if (resourceFilter) resourceFilter.addEventListener('change', () => { materialCurrentPage = 1; filterMaterials(); });
+        if (decorationSearch) decorationSearch.addEventListener('input', () => { decorationCurrentPage = 1; filterDecorations(); });
+        if (activitySearch) activitySearch.addEventListener('input', () => { activityLogCurrentPage = 1; filterActivityLogs(); });
+        if (activityFilter) activityFilter.addEventListener('change', () => { activityLogCurrentPage = 1; filterActivityLogs(); });
     } catch (err) {
         console.error('Error in Admin init:', err);
     } finally {
@@ -246,37 +344,86 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 const materialsContainer = document.getElementById('materials-management-container');
 
+window.changeMaterialPage = function(delta) {
+    materialCurrentPage += delta;
+    renderMaterialsList();
+};
+
 async function loadMaterials() {
     if (!materialsContainer) return;
     try {
         // Fetch fresh materials to ensure we see everything
         const response = await fetch(`${API_BASE_URL}/materials?t=${Date.now()}`);
         if (!response.ok) throw new Error('Failed to fetch materials');
-        const materials = await response.json();
+        allMaterials = await response.json();
         
-        if (materials.length === 0) {
-            materialsContainer.innerHTML = '<p>No materials found in inventory.</p>';
-            return;
+        // Dynamically populate categories in filter dropdown
+        const categories = [...new Set(allMaterials.map(m => m.category))];
+        const categoryFilter = document.getElementById('resource-category-filter');
+        if (categoryFilter) {
+            categoryFilter.innerHTML = '<option value="all">All Categories</option>' + 
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
         }
 
-        materialsContainer.innerHTML = materials.map(m => {
-            const sizeInfo = m.size ? `(${m.size})` : '';
-            return `
-                <div class="resource-card decoration-admin-card">
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0; font-size: 1.1rem;">${m.name} ${sizeInfo}</h3>
-                        <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${m.category} — ${m.total_quantity} total</p>
-                    </div>
-                    <button class="delete-btn-minimal" onclick="deleteMaterial(${m.id}, '${m.name}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                    </button>
-                </div>
-            `;
-        }).join('');
+        materialCurrentPage = 1;
+        filterMaterials();
     } catch (err) {
         console.error('Failed to load materials', err);
         materialsContainer.innerHTML = '<p style="color:red;">Error loading materials.</p>';
     }
+}
+
+function filterMaterials() {
+    const searchInput = document.getElementById('resource-search-input');
+    const categoryFilter = document.getElementById('resource-category-filter');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const category = categoryFilter ? categoryFilter.value : 'all';
+
+    filteredMaterials = allMaterials.filter(m => {
+        const matchesSearch = m.name.toLowerCase().includes(query) || (m.category && m.category.toLowerCase().includes(query));
+        const matchesCategory = category === 'all' || m.category === category;
+        return matchesSearch && matchesCategory;
+    });
+
+    renderMaterialsList();
+}
+
+function renderMaterialsList() {
+    if (!materialsContainer) return;
+
+    if (filteredMaterials.length === 0) {
+        materialsContainer.innerHTML = '<p>No materials found matching criteria.</p>';
+        const paginationContainer = document.getElementById('materials-pagination');
+        if (paginationContainer) paginationContainer.innerHTML = '';
+        return;
+    }
+
+    const totalItems = filteredMaterials.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (materialCurrentPage > totalPages) materialCurrentPage = totalPages;
+    if (materialCurrentPage < 1) materialCurrentPage = 1;
+
+    const start = (materialCurrentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pagedMaterials = filteredMaterials.slice(start, end);
+
+    materialsContainer.innerHTML = pagedMaterials.map(m => {
+        const sizeInfo = m.size ? `(${m.size})` : '';
+        return `
+            <div class="resource-card decoration-admin-card">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0; font-size: 1.1rem;">${m.name} ${sizeInfo}</h3>
+                    <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${m.category} — ${m.total_quantity} total</p>
+                </div>
+                <button class="delete-btn-minimal" onclick="deleteMaterial(${m.id}, '${m.name}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    renderPaginationControls('materials-pagination', materialCurrentPage, totalPages, 'changeMaterialPage');
 }
 
 window.deleteMaterial = async function(id, name) {
@@ -299,39 +446,76 @@ window.deleteMaterial = async function(id, name) {
 
 const decorationsContainer = document.getElementById('decorations-management-container');
 
+window.changeDecorationPage = function(delta) {
+    decorationCurrentPage += delta;
+    renderDecorationsList();
+};
+
 async function loadDecorations() {
     if (!decorationsContainer) return;
     try {
         const response = await fetch(`${API_BASE_URL}/events`);
         if (!response.ok) throw new Error('Failed to fetch decorations');
-        const projects = await response.json();
+        allDecorations = await response.json();
         
-        if (projects.length === 0) {
-            decorationsContainer.innerHTML = '<p>No decorations found.</p>';
-            return;
-        }
-
-        decorationsContainer.innerHTML = projects.map(project => {
-            const date = new Date(project.event_date).toLocaleDateString();
-            const imageCount = project.images ? project.images.length : 0;
-            
-            return `
-                <div class="resource-card decoration-admin-card">
-                    <div style="flex: 1;">
-                        <h3 style="margin: 0; font-size: 1.1rem;">${project.event_name}</h3>
-                        <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${project.venue} — ${date}</p>
-                        <p style="margin: 0; font-size: 0.8rem; font-weight: 600;">${imageCount} Photos</p>
-                    </div>
-                    <button class="delete-btn-minimal" onclick="deleteDecoration(${project.id}, '${project.event_name}')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                    </button>
-                </div>
-            `;
-        }).join('');
+        decorationCurrentPage = 1;
+        filterDecorations();
     } catch (err) {
         console.error('Failed to load decorations', err);
         decorationsContainer.innerHTML = '<p style="color:red;">Error loading decorations.</p>';
     }
+}
+
+function filterDecorations() {
+    const searchInput = document.getElementById('decoration-search-input');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    filteredDecorations = allDecorations.filter(project => {
+        return project.event_name.toLowerCase().includes(query) || (project.venue && project.venue.toLowerCase().includes(query));
+    });
+
+    renderDecorationsList();
+}
+
+function renderDecorationsList() {
+    if (!decorationsContainer) return;
+
+    if (filteredDecorations.length === 0) {
+        decorationsContainer.innerHTML = '<p>No decorations found.</p>';
+        const paginationContainer = document.getElementById('decorations-pagination');
+        if (paginationContainer) paginationContainer.innerHTML = '';
+        return;
+    }
+
+    const totalItems = filteredDecorations.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (decorationCurrentPage > totalPages) decorationCurrentPage = totalPages;
+    if (decorationCurrentPage < 1) decorationCurrentPage = 1;
+
+    const start = (decorationCurrentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pagedDecorations = filteredDecorations.slice(start, end);
+
+    decorationsContainer.innerHTML = pagedDecorations.map(project => {
+        const date = new Date(project.event_date).toLocaleDateString();
+        const imageCount = project.images ? project.images.length : 0;
+        
+        return `
+            <div class="resource-card decoration-admin-card">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0; font-size: 1.1rem;">${project.event_name}</h3>
+                    <p style="margin: 4px 0; font-size: 0.9rem; color: var(--text-secondary);">${project.venue} — ${date}</p>
+                    <p style="margin: 0; font-size: 0.8rem; font-weight: 600;">${imageCount} Photos</p>
+                </div>
+                <button class="delete-btn-minimal" onclick="deleteDecoration(${project.id}, '${project.event_name}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    renderPaginationControls('decorations-pagination', decorationCurrentPage, totalPages, 'changeDecorationPage');
 }
 
 window.deleteDecoration = async function(id, name) {

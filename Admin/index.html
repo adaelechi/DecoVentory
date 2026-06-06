@@ -67,27 +67,45 @@
                 </div>
 
                 <h2 style="margin-top: 3rem; margin-bottom: 1rem;">Manage Resources</h2>
+                <div class="admin-controls-row">
+                    <input type="text" id="resource-search-input" placeholder="Search resources..." class="admin-search-input">
+                    <select id="resource-category-filter" class="admin-filter-select">
+                        <option value="all">All Categories</option>
+                    </select>
+                </div>
                 <div id="materials-management-container" class="resource-grid">
                     <div class="resource-card">
                         <div class="skeleton skeleton-text h3"></div>
                         <div class="skeleton skeleton-text short"></div>
                     </div>
                 </div>
+                <div id="materials-pagination" class="pagination-container"></div>
 
                 <h2 style="margin-top: 3rem; margin-bottom: 1rem;">Manage Decorations</h2>
+                <div class="admin-controls-row">
+                    <input type="text" id="decoration-search-input" placeholder="Search decorations..." class="admin-search-input">
+                </div>
                 <div id="decorations-management-container" class="resource-grid">
                     <div class="resource-card">
                         <div class="skeleton skeleton-text h3"></div>
                         <div class="skeleton skeleton-text short"></div>
                     </div>
                 </div>
+                <div id="decorations-pagination" class="pagination-container"></div>
 
                 <h2 style="margin-top: 3rem; margin-bottom: 1rem;">Recent Activity Logs</h2>
+                <div class="admin-controls-row">
+                    <input type="text" id="activity-search-input" placeholder="Search logs by material or notes..." class="admin-search-input">
+                    <select id="activity-action-filter" class="admin-filter-select">
+                        <option value="all">All Actions</option>
+                    </select>
+                </div>
                 <div id="activity-logs-container">
                     <div class="skeleton skeleton-text" style="height: 40px; margin-bottom: 10px;"></div>
                     <div class="skeleton skeleton-text" style="height: 40px; margin-bottom: 10px;"></div>
                     <div class="skeleton skeleton-text" style="height: 40px; margin-bottom: 10px;"></div>
                 </div>
+                <div id="activity-logs-pagination" class="pagination-container"></div>
 
                 <h2 style="margin-top: 3rem; margin-bottom: 1rem;">Security & Access Control</h2>
                 <div class="security-grid">
