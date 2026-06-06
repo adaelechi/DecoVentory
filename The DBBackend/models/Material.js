@@ -73,7 +73,19 @@ class Material {
   }
 
   static delete(id, callback) {
-    db.run('DELETE FROM materials WHERE id = ?', [id], callback);
+    db.run('DELETE FROM activity_logs WHERE material_id = ?', [id], (err) => {
+      if (err) return callback(err);
+      
+      db.run('DELETE FROM external_borrow_items WHERE material_id = ?', [id], (err) => {
+        if (err) return callback(err);
+        
+        db.run('DELETE FROM material_locations WHERE material_id = ?', [id], (err) => {
+          if (err) return callback(err);
+          
+          db.run('DELETE FROM materials WHERE id = ?', [id], callback);
+        });
+      });
+    });
   }
 
   static getByIdPromise(id) {
