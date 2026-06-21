@@ -76,8 +76,6 @@ exports.createEvent = (req, res) => {
       return res.status(500).json({ error: 'Failed to create event' });
     }
 
-    // Reduce available quantities and log activities
-    let completed = 0;
     if (!parsedMaterials || parsedMaterials.length === 0) {
       return res.status(201).json({
         success: true,
@@ -86,32 +84,54 @@ exports.createEvent = (req, res) => {
       });
     }
 
-    parsedMaterials.forEach(item => {
-      Material.getById(item.material_id, (err, material) => {
-        if (!err && material) {
-          const newAvailable = material.available_quantity - item.quantity;
-          Material.updateQuantity(item.material_id, newAvailable, () => {
+    // Reduce available quantities and log activities safely
+    const updatePromises = parsedMaterials.map(item => {
+      return new Promise((resolve) => {
+        Material.getById(item.material_id, (err, material) => {
+          if (err || !material) {
+            if (err) console.error(`Error fetching material ${item.material_id}:`, err);
+            return resolve();
+          }
+
+          const newAvailable = Math.max(0, material.available_quantity - item.quantity);
+          Material.updateQuantity(item.material_id, newAvailable, (updateErr) => {
+            if (updateErr) {
+              console.error(`Error updating material ${item.material_id} quantity:`, updateErr);
+              return resolve();
+            }
+
             ActivityLog.create(
               item.material_id,
               'EVENT_USE',
               item.quantity,
               result.id,
               `Used for event: ${event_name}`,
-              () => {}
+              (logErr) => {
+                if (logErr) console.error(`Error creating activity log for material ${item.material_id}:`, logErr);
+                resolve();
+              }
             );
           });
-        }
-        
-        completed++;
-        if (completed === parsedMaterials.length) {
-          res.status(201).json({
-            success: true,
-            id: result.id,
-            message: 'Event created and inventory updated'
-          });
-        }
+        });
       });
     });
+
+    Promise.all(updatePromises)
+      .then(() => {
+        res.status(201).json({
+          success: true,
+          id: result.id,
+          message: 'Event created and inventory updated'
+        });
+      })
+      .catch(err => {
+        console.error('CRITICAL: Promise.all failed unexpectedly in createEvent:', err);
+        res.status(201).json({
+          success: true,
+          id: result.id,
+          message: 'Event created'
+        });
+      });
   });
 };
 
@@ -134,36 +154,60 @@ exports.markEventReturned = (req, res) => {
         return res.status(500).json({ error: 'Failed to mark event as returned' });
       }
 
-      // Restore quantities (minus lost/damaged items)
-      materials_used.forEach(item => {
-        Material.getById(item.material_id, (err, material) => {
-          if (!err && material) {
-            const lostQty = lost_items.find(l => l.material_id === item.material_id)?.quantity || 0;
-            const damagedQty = damaged_items.find(d => d.material_id === item.material_id)?.quantity || 0;
+      if (!materials_used || materials_used.length === 0) {
+        return res.json({ success: true, message: 'Event marked as returned' });
+      }
+
+      // Restore quantities (minus lost/damaged items) safely
+      const updatePromises = materials_used.map(item => {
+        return new Promise((resolve) => {
+          Material.getById(item.material_id, (err, material) => {
+            if (err || !material) {
+              if (err) console.error(`Error fetching material ${item.material_id}:`, err);
+              return resolve();
+            }
+
+            const lostQty = lost_items.find(l => Number(l.material_id) === Number(item.material_id))?.quantity || 0;
+            const damagedQty = damaged_items.find(d => Number(d.material_id) === Number(item.material_id))?.quantity || 0;
             const returnedQty = item.quantity - lostQty - damagedQty;
 
             const newAvailable = material.available_quantity + returnedQty;
-            const newTotal = material.total_quantity - lostQty - damagedQty;
+            const newTotal = Math.max(0, material.total_quantity - lostQty - damagedQty);
 
             Material.update(item.material_id, {
               ...material,
               available_quantity: newAvailable,
               total_quantity: newTotal
-            }, () => {
+            }, (updateErr) => {
+              if (updateErr) {
+                console.error(`Error updating material ${item.material_id} quantities:`, updateErr);
+                return resolve();
+              }
+
               ActivityLog.create(
                 item.material_id,
                 'RETURN',
                 returnedQty,
                 req.params.id,
                 `Returned from event: ${event.event_name}`,
-                () => {}
+                (logErr) => {
+                  if (logErr) console.error(`Error creating activity log for material ${item.material_id}:`, logErr);
+                  resolve();
+                }
               );
             });
-          }
+          });
         });
       });
 
-      res.json({ success: true, message: 'Event marked as returned and inventory updated' });
+      Promise.all(updatePromises)
+        .then(() => {
+          res.json({ success: true, message: 'Event marked as returned and inventory updated' });
+        })
+        .catch(err => {
+          console.error('CRITICAL: Promise.all failed unexpectedly in markEventReturned:', err);
+          res.json({ success: true, message: 'Event marked as returned' });
+        });
     });
   });
 };

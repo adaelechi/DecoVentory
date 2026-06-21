@@ -1,11 +1,18 @@
 // DecoVentory API Configuration
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE_URL = isLocalhost 
-  ? 'http://localhost:3000/api' 
+const hostname = window.location.hostname;
+const isLocalIP = 
+  hostname === 'localhost' || 
+  hostname === '127.0.0.1' || 
+  hostname.startsWith('192.168.') || 
+  hostname.startsWith('10.') || 
+  hostname.startsWith('172.');
+
+const API_BASE_URL = isLocalIP 
+  ? `http://${hostname}:3000/api` 
   : 'https://decoventory.onrender.com/api'; // Render backend remains for now
 
-const IMAGE_BASE_URL = isLocalhost 
-  ? 'http://localhost:3000' 
+const IMAGE_BASE_URL = isLocalIP 
+  ? `http://${hostname}:3000` 
   : 'https://decoventory.onrender.com';
 
 // Returns the correct image src — if image_url is already a full URL (Cloudinary),

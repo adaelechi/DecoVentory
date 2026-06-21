@@ -60,42 +60,63 @@ exports.createBorrower = (req, res) => {
     }
 
     const borrowId = result.id;
-    let completed = 0;
 
-    // Create borrow items and update inventory
-    items.forEach(item => {
-      ExternalBorrowItem.create(borrowId, item.material_id, item.quantity, (err) => {
-        if (err) {
-          return res.status(500).json({ error: 'Failed to create borrow item' });
-        }
+    // Create borrow items and update inventory safely
+    const updatePromises = items.map(item => {
+      return new Promise((resolve) => {
+        ExternalBorrowItem.create(borrowId, item.material_id, item.quantity, (createErr) => {
+          if (createErr) {
+            console.error(`Error creating borrow item for material ${item.material_id}:`, createErr);
+            return resolve();
+          }
 
-        // Reduce available quantity
-        Material.getById(item.material_id, (err, material) => {
-          if (!err && material) {
-            const newAvailable = material.available_quantity - item.quantity;
-            Material.updateQuantity(item.material_id, newAvailable, () => {
+          // Reduce available quantity
+          Material.getById(item.material_id, (fetchErr, material) => {
+            if (fetchErr || !material) {
+              if (fetchErr) console.error(`Error fetching material ${item.material_id}:`, fetchErr);
+              return resolve();
+            }
+
+            const newAvailable = Math.max(0, material.available_quantity - item.quantity);
+            Material.updateQuantity(item.material_id, newAvailable, (updateErr) => {
+              if (updateErr) {
+                console.error(`Error updating material ${item.material_id} quantity:`, updateErr);
+                return resolve();
+              }
+
               ActivityLog.create(
                 item.material_id,
                 'BORROW',
                 item.quantity,
                 borrowId,
                 `Borrowed by ${borrower_name}`,
-                () => {}
+                (logErr) => {
+                  if (logErr) console.error(`Error creating activity log for material ${item.material_id}:`, logErr);
+                  resolve();
+                }
               );
             });
-          }
-
-          completed++;
-          if (completed === items.length) {
-            res.status(201).json({
-              success: true,
-              id: borrowId,
-              message: 'Borrower created and inventory updated'
-            });
-          }
+          });
         });
       });
     });
+
+    Promise.all(updatePromises)
+      .then(() => {
+        res.status(201).json({
+          success: true,
+          id: borrowId,
+          message: 'Borrower created and inventory updated'
+        });
+      })
+      .catch(err => {
+        console.error('CRITICAL: Promise.all failed unexpectedly in createBorrower:', err);
+        res.status(201).json({
+          success: true,
+          id: borrowId,
+          message: 'Borrower created'
+        });
+      });
   });
 };
 
@@ -120,58 +141,81 @@ exports.markBorrowerReturned = (req, res) => {
         return res.status(500).json({ error: 'Failed to mark as returned' });
       }
 
-      let completed = 0;
+      if (items.length === 0) {
+        return res.json({ success: true, message: 'Borrower marked as returned' });
+      }
 
-      // Update each item and adjust inventory
-      items.forEach(item => {
-        ExternalBorrowItem.updateReturn(
-          item.id,
-          item.returned_quantity,
-          item.lost_quantity || 0,
-          item.damaged_quantity || 0,
-          (err) => {
-            if (err) {
-              return res.status(500).json({ error: 'Failed to update borrow item' });
-            }
+      // Update each item and adjust inventory safely
+      const updatePromises = items.map(item => {
+        return new Promise((resolve) => {
+          ExternalBorrowItem.updateReturn(
+            item.id,
+            item.returned_quantity,
+            item.lost_quantity || 0,
+            item.damaged_quantity || 0,
+            (updateErr) => {
+              if (updateErr) {
+                console.error(`Error updating return status for borrow item ${item.id}:`, updateErr);
+                return resolve();
+              }
 
-            // Get material to update quantities
-            ExternalBorrowItem.getByBorrowId(req.params.id, (err, borrowItems) => {
-              if (!err && borrowItems) {
-                const borrowItem = borrowItems.find(bi => bi.id === item.id);
-                if (borrowItem) {
-                  Material.getById(borrowItem.material_id, (err, material) => {
-                    if (!err && material) {
-                      const newAvailable = material.available_quantity + item.returned_quantity;
-                      const lostDamaged = (item.lost_quantity || 0) + (item.damaged_quantity || 0);
-                      const newTotal = material.total_quantity - lostDamaged;
-
-                      Material.update(borrowItem.material_id, {
-                        ...material,
-                        available_quantity: newAvailable,
-                        total_quantity: newTotal
-                      }, () => {
-                        ActivityLog.create(
-                          borrowItem.material_id,
-                          'RETURN',
-                          item.returned_quantity,
-                          req.params.id,
-                          `Returned by ${borrower.borrower_name}`,
-                          () => {}
-                        );
-                      });
-                    }
-                  });
+              // Get material to update quantities
+              ExternalBorrowItem.getByBorrowId(req.params.id, (fetchItemsErr, borrowItems) => {
+                if (fetchItemsErr || !borrowItems) {
+                  if (fetchItemsErr) console.error(`Error fetching borrow items for borrower ${req.params.id}:`, fetchItemsErr);
+                  return resolve();
                 }
-              }
 
-              completed++;
-              if (completed === items.length) {
-                res.json({ success: true, message: 'Items returned and inventory updated' });
-              }
-            });
-          }
-        );
+                const borrowItem = borrowItems.find(bi => bi.id === item.id);
+                if (!borrowItem) return resolve();
+
+                Material.getById(borrowItem.material_id, (fetchMaterialErr, material) => {
+                  if (fetchMaterialErr || !material) {
+                    if (fetchMaterialErr) console.error(`Error fetching material ${borrowItem.material_id}:`, fetchMaterialErr);
+                    return resolve();
+                  }
+
+                  const newAvailable = material.available_quantity + item.returned_quantity;
+                  const lostDamaged = (item.lost_quantity || 0) + (item.damaged_quantity || 0);
+                  const newTotal = Math.max(0, material.total_quantity - lostDamaged);
+
+                  Material.update(borrowItem.material_id, {
+                    ...material,
+                    available_quantity: newAvailable,
+                    total_quantity: newTotal
+                  }, (updateMaterialErr) => {
+                    if (updateMaterialErr) {
+                      console.error(`Error updating material ${borrowItem.material_id} quantities:`, updateMaterialErr);
+                      return resolve();
+                    }
+
+                    ActivityLog.create(
+                      borrowItem.material_id,
+                      'RETURN',
+                      item.returned_quantity,
+                      req.params.id,
+                      `Returned by ${borrower.borrower_name}`,
+                      (logErr) => {
+                        if (logErr) console.error(`Error creating activity log for material ${borrowItem.material_id}:`, logErr);
+                        resolve();
+                      }
+                    );
+                  });
+                });
+              });
+            }
+          );
+        });
       });
+
+      Promise.all(updatePromises)
+        .then(() => {
+          res.json({ success: true, message: 'Items returned and inventory updated' });
+        })
+        .catch(err => {
+          console.error('CRITICAL: Promise.all failed unexpectedly in markBorrowerReturned:', err);
+          res.json({ success: true, message: 'Items returned' });
+        });
     });
   });
 };

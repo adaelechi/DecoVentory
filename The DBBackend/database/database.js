@@ -102,9 +102,27 @@ if (process.env.DATABASE_URL) {
       });
     },
     // Backwards compatibility methods
-    all: (sql, params, callback) => sqliteDb.all(sql, params, callback),
-    get: (sql, params, callback) => sqliteDb.get(sql, params, callback),
-    run: (sql, params, callback) => sqliteDb.run(sql, params, callback)
+    all: (sql, params, callback) => {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.all(sql, params, callback);
+    },
+    get: (sql, params, callback) => {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.get(sql, params, callback);
+    },
+    run: (sql, params, callback) => {
+      if (typeof params === 'function') {
+        callback = params;
+        params = [];
+      }
+      sqliteDb.run(sql, params, callback);
+    }
   };
 }
 

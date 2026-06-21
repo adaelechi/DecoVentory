@@ -365,7 +365,7 @@ function renderResources(materials) {
 
     resourceSection.innerHTML = pagedMaterials.map(material => `
         <div class="resource-card">
-            ${material.image_url ? `<img src="${getImageUrl(material.image_url)}" alt="${material.name}" class="resource-image">` : '<div class="no-image">📦</div>'}
+            ${material.image_url ? `<img src="${getImageUrl(material.image_url)}" alt="${material.name}" class="resource-image" onerror="this.src='/assets/logo.jpeg'">` : '<div class="no-image">📦</div>'}
             <h3>${material.name}</h3>
             <p><strong>Category:</strong> ${material.category}</p>
             ${material.size ? `<p><strong>Size:</strong> ${material.size}</p>` : ''}
