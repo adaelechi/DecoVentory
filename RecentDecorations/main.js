@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryGrid.innerHTML = projects.map(project => {
             const mainImage = project.images && project.images.length > 0 
                 ? getImageUrl(project.images[0])
-                : '/assets/placeholder-decoration.jpg'; // Need a placeholder
+                : '/assets/logo.jpeg'; // Fallback to logo directly
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {
                 month: 'short',

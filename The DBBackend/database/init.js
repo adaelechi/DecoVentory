@@ -1,4 +1,4 @@
-const db = require('./database');
+const { db } = require('./database');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');

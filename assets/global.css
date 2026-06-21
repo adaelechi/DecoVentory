@@ -32,6 +32,11 @@ body.dark-mode {
     --modal-backdrop: rgba(0, 0, 0, 0.8);
 }
 
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
 * {
     box-sizing: border-box;
 }

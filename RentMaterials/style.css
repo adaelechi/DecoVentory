@@ -331,6 +331,7 @@
 
 /* For html2pdf.js it's better to ensure no scroll on the content itself during generation */
 .quote-document.pdf-generating {
+    width: 800px !important;
     overflow: visible;
     height: auto;
 }

@@ -264,6 +264,8 @@ const form = document.getElementById('resourceForm');
 addResourceBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     
+    const originalText = addResourceBtn.textContent;
+    
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
@@ -331,7 +333,6 @@ addResourceBtn.addEventListener('click', async (e) => {
     }
 
     // Show loading state
-    const originalText = addResourceBtn.textContent;
     addResourceBtn.textContent = 'Adding...';
     addResourceBtn.disabled = true;
 

@@ -206,6 +206,7 @@ main {
     height: 2.5rem;
     margin: 0.7rem 0;
     background-color: var(--bg-primary);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
 }
 
 .sidebar_list li a {
@@ -754,6 +755,17 @@ body.dark-mode .details-btn {
 body.dark-mode .details-secondary {
     background-color: var(--bg-primary);
     color: var(--text-primary);
+}
+
+body.dark-mode .reset-btn {
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .reset-btn:hover {
+    background-color: var(--border-color);
+    border-color: var(--text-secondary);
 }
 
 /* Tablet / iPad breakpoint — collapse sidebar to bottom nav */
