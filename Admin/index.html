@@ -168,48 +168,52 @@
     </main>
 
     <!-- Add/Edit Color Combo Modal -->
-    <div id="colorComboModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content combo-modal-content">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 id="comboModalTitle" style="margin: 0; font-size: 1.25rem;">Add New Color Combo</h3>
-                <button type="button" class="close-modal-btn" id="closeComboModalBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+    <div class="details-modal" id="colorComboModal">
+        <div class="details-modal__backdrop" id="closeComboModalBackdrop"></div>
+        <div class="details-modal__panel">
+            <div class="details-modal__header">
+                <h2 id="comboModalTitle">Add New Color Combo</h2>
+                <button type="button" class="details-close" id="closeComboModalBtn">&times;</button>
             </div>
             <form id="comboForm">
                 <input type="hidden" id="comboIdInput">
-                <div class="form-group" style="margin-bottom: 16px;">
-                    <label for="comboTitleInput" style="display: block; margin-bottom: 6px; font-weight: 600;">Combo Title / Name</label>
-                    <input type="text" id="comboTitleInput" placeholder="e.g. Royal Gold & Emerald, Red & Blue Combo" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary);">
+                <div class="form-group">
+                    <label for="comboTitleInput">Combo Title / Name</label>
+                    <input type="text" id="comboTitleInput" placeholder="e.g. Royal Gold & Emerald, Red & Blue Combo" required>
                 </div>
                 
-                <div class="form-group" style="margin-bottom: 16px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Colors in Combo</label>
+                <div class="form-group">
+                    <label>Colors in Combo</label>
                     <div id="comboColorsList" class="combo-colors-list" style="display: flex; flex-direction: column; gap: 10px;">
                         <!-- Dynamic color item rows -->
                     </div>
-                    <button type="button" class="btn-secondary" id="addComboColorRowBtn" style="margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <button type="button" class="details-secondary" id="addComboColorRowBtn" style="margin-top: 12px; width: 100%; height: 2.8rem;">
                         + Add Color
                     </button>
                 </div>
 
-                <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;">
-                    <button type="button" class="btn-secondary" id="cancelComboModalBtn">Cancel</button>
-                    <button type="submit" class="btn-primary" id="saveComboBtn">Save Combo</button>
+                <div class="details-actions">
+                    <button type="button" class="details-secondary" id="cancelComboModalBtn">Cancel</button>
+                    <button type="submit" class="details-primary" id="saveComboBtn">Save Combo</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content confirm-modal-content" style="max-width: 440px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 id="confirmModalTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700;">Confirm Action</h3>
-                <button type="button" class="close-modal-btn" id="closeConfirmModalBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+    <!-- Confirmation Modal (Matching Website Modal Design) -->
+    <div class="details-modal" id="confirmationModal">
+        <div class="details-modal__backdrop" id="closeConfirmModalBackdrop"></div>
+        <div class="details-modal__panel" style="width: min(92%, 28rem);">
+            <div class="details-modal__header">
+                <h2 id="confirmModalTitle">Confirm Action</h2>
+                <button type="button" class="details-close" id="closeConfirmModalBtn">&times;</button>
             </div>
-            <p id="confirmModalMessage" style="color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5;">Are you sure you want to proceed?</p>
-            <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" class="btn-secondary" id="cancelConfirmModalBtn">Cancel</button>
-                <button type="button" class="btn-primary" id="confirmModalBtn">Confirm</button>
+            <p id="confirmModalMessage" style="color: var(--text-secondary); margin: 0.75rem 0 1.75rem; font-size: 0.98rem; line-height: 1.5;">
+                Are you sure you want to proceed?
+            </p>
+            <div class="details-actions">
+                <button type="button" class="details-secondary" id="cancelConfirmModalBtn">Cancel</button>
+                <button type="button" class="details-primary" id="confirmModalBtn">Confirm</button>
             </div>
         </div>
     </div>

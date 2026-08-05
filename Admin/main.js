@@ -888,7 +888,7 @@ if (addComboColorRowBtn) {
 
 if (colorComboModal) {
     colorComboModal.addEventListener('click', (e) => {
-        if (e.target === colorComboModal) closeComboModal();
+        if (e.target === colorComboModal || e.target.id === 'closeComboModalBackdrop') closeComboModal();
     });
 }
 
