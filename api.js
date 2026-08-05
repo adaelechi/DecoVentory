@@ -122,7 +122,12 @@ const API = {
   getColorCombos: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/color-combos`);
-      return await response.json();
+      if (!response.ok) {
+        console.warn('GET /color-combos status:', response.status);
+        return [];
+      }
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     } catch (error) {
       console.error('Error fetching color combos:', error);
       return [];
@@ -139,7 +144,11 @@ const API = {
         },
         body: JSON.stringify(comboData)
       });
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return { error: data.error || 'Failed to create color combo' };
+      }
+      return data;
     } catch (error) {
       console.error('Error creating color combo:', error);
       return { error: 'Failed to create color combo' };
@@ -156,7 +165,11 @@ const API = {
         },
         body: JSON.stringify(comboData)
       });
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return { error: data.error || 'Failed to update color combo' };
+      }
+      return data;
     } catch (error) {
       console.error('Error updating color combo:', error);
       return { error: 'Failed to update color combo' };
@@ -171,7 +184,11 @@ const API = {
           'Authorization': `Bearer ${getAuthToken()}`
         }
       });
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return { error: data.error || 'Failed to delete color combo' };
+      }
+      return data;
     } catch (error) {
       console.error('Error deleting color combo:', error);
       return { error: 'Failed to delete color combo' };
