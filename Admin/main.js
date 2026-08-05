@@ -26,6 +26,63 @@ let activityLogCurrentPage = 1;
 
 const itemsPerPage = 10;
 
+// Custom Confirmation Modal System (Replaces native browser confirm/alert popups)
+function showConfirmModal({ title = 'Confirm Action', message = 'Are you sure you want to proceed?', confirmText = 'Confirm', cancelText = 'Cancel', isDanger = true }) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmationModal');
+        const titleEl = document.getElementById('confirmModalTitle');
+        const messageEl = document.getElementById('confirmModalMessage');
+        const confirmBtn = document.getElementById('confirmModalBtn');
+        const cancelBtn = document.getElementById('cancelConfirmModalBtn');
+        const closeBtn = document.getElementById('closeConfirmModalBtn');
+
+        if (!modal || !confirmBtn) {
+            resolve(true); // Fallback
+            return;
+        }
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+        if (confirmBtn) confirmBtn.textContent = confirmText;
+        if (cancelBtn) cancelBtn.textContent = cancelText;
+
+        if (isDanger) {
+            confirmBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+        } else {
+            confirmBtn.style.background = 'linear-gradient(135deg, var(--deco-red) 0%, #A53233 100%)';
+        }
+
+        const handleConfirm = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        const handleBackdrop = (e) => {
+            if (e.target === modal) handleCancel();
+        };
+
+        const cleanup = () => {
+            modal.style.display = 'none';
+            confirmBtn.removeEventListener('click', handleConfirm);
+            if (cancelBtn) cancelBtn.removeEventListener('click', handleCancel);
+            if (closeBtn) closeBtn.removeEventListener('click', handleCancel);
+            modal.removeEventListener('click', handleBackdrop);
+        };
+
+        confirmBtn.addEventListener('click', handleConfirm);
+        if (cancelBtn) cancelBtn.addEventListener('click', handleCancel);
+        if (closeBtn) closeBtn.addEventListener('click', handleCancel);
+        modal.addEventListener('click', handleBackdrop);
+
+        modal.style.display = 'flex';
+    });
+}
+
 function renderPaginationControls(containerId, currentPage, totalPages, changePageFuncName) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -255,7 +312,14 @@ function renderActivityLogsList() {
 }
 
 window.approveQuote = async function(id) {
-    if (!confirm('Are you sure you want to approve this quote? This will deduct the requested materials from available inventory.')) return;
+    const confirmed = await showConfirmModal({
+        title: 'Approve Rent Request',
+        message: 'Are you sure you want to approve this quote? This will deduct requested materials from available inventory.',
+        confirmText: 'Approve Request',
+        isDanger: false
+    });
+    if (!confirmed) return;
+
     try {
         const response = await fetch(`${API_BASE_URL}/quotes/${id}/approve`, {
             method: 'PUT',
@@ -270,7 +334,14 @@ window.approveQuote = async function(id) {
 };
 
 window.rejectQuote = async function(id) {
-    if (!confirm('Are you sure you want to reject this quote?')) return;
+    const confirmed = await showConfirmModal({
+        title: 'Reject Rent Request',
+        message: 'Are you sure you want to reject this quote request?',
+        confirmText: 'Reject Request',
+        isDanger: true
+    });
+    if (!confirmed) return;
+
     try {
         const response = await fetch(`${API_BASE_URL}/quotes/${id}/reject`, {
             method: 'PUT',
@@ -293,7 +364,13 @@ window.updatePin = async function(role, inputId) {
         return;
     }
 
-    if (!confirm(`Are you sure you want to update the ${role} passcode?`)) return;
+    const confirmed = await showConfirmModal({
+        title: 'Update Passcode',
+        message: `Are you sure you want to update the ${role} passcode?`,
+        confirmText: 'Update Passcode',
+        isDanger: false
+    });
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`${API_BASE_URL}/auth/update-role-passcode`, {
@@ -428,7 +505,13 @@ function renderMaterialsList() {
 }
 
 window.deleteMaterial = async function(id, name) {
-    if (!confirm(`Are you sure you want to delete "${name}" from inventory? This will also remove its photo. This action cannot be undone.`)) return;
+    const confirmed = await showConfirmModal({
+        title: 'Delete Material',
+        message: `Are you sure you want to delete "${name}" from inventory? This will also remove its photo. This action cannot be undone.`,
+        confirmText: 'Delete Material',
+        isDanger: true
+    });
+    if (!confirmed) return;
     
     try {
         const response = await fetch(`${API_BASE_URL}/materials/${id}`, {
@@ -520,7 +603,13 @@ function renderDecorationsList() {
 }
 
 window.deleteDecoration = async function(id, name) {
-    if (!confirm(`Are you sure you want to delete "${name}"? This will also remove its photos from Cloudinary. This action cannot be undone.`)) return;
+    const confirmed = await showConfirmModal({
+        title: 'Delete Decoration',
+        message: `Are you sure you want to delete "${name}"? This will also remove its photos from Cloudinary. This action cannot be undone.`,
+        confirmText: 'Delete Decoration',
+        isDanger: true
+    });
+    if (!confirmed) return;
     
     try {
         const response = await fetch(`${API_BASE_URL}/events/${id}`, {
@@ -763,7 +852,14 @@ function addComboColorRow(initialName = '', initialHex = '#4169E1') {
 }
 
 window.deleteColorCombo = async function(id, title) {
-    if (!confirm(`Are you sure you want to delete color combo "${title}"?`)) return;
+    const confirmed = await showConfirmModal({
+        title: 'Delete Color Combo',
+        message: `Are you sure you want to delete color combo "${title}"? This action cannot be undone.`,
+        confirmText: 'Delete Combo',
+        isDanger: true
+    });
+    if (!confirmed) return;
+
     try {
         const result = await API.deleteColorCombo(id);
         if (result.error) throw new Error(result.error);

@@ -205,7 +205,6 @@ function checkAuth() {
         window.location.href = '/Dashboard/index.html';
       }, 1500);
     } else {
-      alert('Please login first');
       window.location.href = '/Dashboard/index.html';
     }
   }
