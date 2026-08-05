@@ -330,6 +330,7 @@ function applyCurrentFilters(materials = allMaterials) {
             material.name.toLowerCase().includes(searchTerm) ||
             material.category.toLowerCase().includes(searchTerm) ||
             material.condition.toLowerCase().includes(searchTerm) ||
+            (material.colour && material.colour.toLowerCase().includes(searchTerm)) ||
             (material.locations && material.locations.some(loc => loc.name.toLowerCase().includes(searchTerm))) ||
             (material.location && material.location.toLowerCase().includes(searchTerm));
 
@@ -760,6 +761,13 @@ function revealDashboard() {
 
 async function loadDashboardData(bustCache = false) {
     if (bustCache) bustMaterialsCache();
+
+    // Check URL parameters for search/color query
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSearchParam = urlParams.get('search') || urlParams.get('color');
+    if (urlSearchParam && searchInput && !searchInput.value) {
+        searchInput.value = urlSearchParam;
+    }
 
     // 1. Render from cache immediately (feels instant)
     const cached = getCachedMaterials();

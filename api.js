@@ -116,6 +116,66 @@ const API = {
       console.error('Error deleting material:', error);
       return { error: 'Failed to delete material' };
     }
+  },
+
+  // Color Combos
+  getColorCombos: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/color-combos`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching color combos:', error);
+      return [];
+    }
+  },
+
+  createColorCombo: async (comboData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/color-combos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify(comboData)
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating color combo:', error);
+      return { error: 'Failed to create color combo' };
+    }
+  },
+
+  updateColorCombo: async (id, comboData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/color-combos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify(comboData)
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating color combo:', error);
+      return { error: 'Failed to update color combo' };
+    }
+  },
+
+  deleteColorCombo: async (id) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/color-combos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting color combo:', error);
+      return { error: 'Failed to delete color combo' };
+    }
   }
 };
 

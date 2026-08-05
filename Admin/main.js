@@ -322,6 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadActivityLogs();
         await loadMaterials();
         await loadDecorations();
+        await loadColorCombos();
         
         // Wire up input search/filter listeners
         const resourceSearch = document.getElementById('resource-search-input');
@@ -535,3 +536,313 @@ window.deleteDecoration = async function(id, name) {
         showToast.error(err.message);
     }
 };
+
+// ── COLOR COMBOS MODULE ──
+const PRESET_COLORS = [
+    { name: 'Select preset...', hex: '' },
+    { name: 'Gold', hex: '#FFD700' },
+    { name: 'Burgundy', hex: '#800020' },
+    { name: 'Emerald Green', hex: '#50C878' },
+    { name: 'Royal Blue', hex: '#4169E1' },
+    { name: 'White', hex: '#FFFFFF' },
+    { name: 'Blush Pink', hex: '#FFB6C1' },
+    { name: 'Rose Gold', hex: '#B76E79' },
+    { name: 'Champagne', hex: '#F7E7CE' },
+    { name: 'Silver', hex: '#C0C0C0' },
+    { name: 'Black', hex: '#111111' },
+    { name: 'Sage Green', hex: '#9CAF88' },
+    { name: 'Navy Blue', hex: '#000080' },
+    { name: 'Lavender', hex: '#E6E6FA' },
+    { name: 'Terracotta', hex: '#E2725B' },
+    { name: 'Purple', hex: '#800080' },
+    { name: 'Red', hex: '#E53935' },
+    { name: 'Yellow', hex: '#FFEB3B' },
+    { name: 'Brown', hex: '#795548' },
+    { name: 'Ivory', hex: '#FFFFF0' },
+    { name: 'Custom...', hex: '#3B82F6' }
+];
+
+let allColorCombos = [];
+
+const colorCombosContainer = document.getElementById('color-combos-container');
+const colorComboModal = document.getElementById('colorComboModal');
+const comboForm = document.getElementById('comboForm');
+const comboModalTitle = document.getElementById('comboModalTitle');
+const comboIdInput = document.getElementById('comboIdInput');
+const comboTitleInput = document.getElementById('comboTitleInput');
+const comboColorsList = document.getElementById('comboColorsList');
+const openAddComboBtn = document.getElementById('openAddComboBtn');
+const closeComboModalBtn = document.getElementById('closeComboModalBtn');
+const cancelComboModalBtn = document.getElementById('cancelComboModalBtn');
+const addComboColorRowBtn = document.getElementById('addComboColorRowBtn');
+const sidebarColorCombosBtn = document.getElementById('sidebarColorCombosBtn');
+
+if (sidebarColorCombosBtn) {
+    sidebarColorCombosBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = document.getElementById('color-combos-section');
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+function resolveColorSwatch(name, hex) {
+    if (hex && hex.trim() !== '') return hex.trim();
+    if (!name) return '#CCCCCC';
+    const preset = PRESET_COLORS.find(p => p.name.toLowerCase() === name.toLowerCase());
+    if (preset && preset.hex) return preset.hex;
+    return name.trim();
+}
+
+async function loadColorCombos() {
+    if (!colorCombosContainer) return;
+    try {
+        allColorCombos = await API.getColorCombos();
+        renderColorCombosList();
+    } catch (err) {
+        console.error('Failed to load color combos', err);
+        colorCombosContainer.innerHTML = '<p style="color:red;">Error loading color combos.</p>';
+    }
+}
+
+function renderColorCombosList() {
+    if (!colorCombosContainer) return;
+
+    if (!Array.isArray(allColorCombos) || allColorCombos.length === 0) {
+        colorCombosContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 2rem; background: var(--card-bg); border-radius: 12px; border: 1px dashed var(--border-color); text-align: center;">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">No color combos created yet.</p>
+                <button type="button" class="btn-primary" onclick="openColorComboModal()">+ Create First Combo</button>
+            </div>
+        `;
+        return;
+    }
+
+    colorCombosContainer.innerHTML = allColorCombos.map(combo => {
+        const colors = Array.isArray(combo.colors) ? combo.colors : [];
+        return `
+            <div class="color-combo-card">
+                <div>
+                    <div class="combo-card-header">
+                        <h3 class="combo-card-title">${combo.title}</h3>
+                        <div class="combo-card-actions">
+                            <button type="button" class="combo-action-btn" title="Edit Combo" onclick="editColorCombo(${combo.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                            </button>
+                            <button type="button" class="combo-action-btn delete-btn" title="Delete Combo" onclick="deleteColorCombo(${combo.id}, '${combo.title.replace(/'/g, "\\'")}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="combo-colors-chips">
+                        ${colors.map(c => {
+                            const name = typeof c === 'string' ? c : (c.name || '');
+                            const hex = typeof c === 'string' ? '' : (c.hex || '');
+                            const swatchBg = resolveColorSwatch(name, hex);
+                            return `
+                                <div class="color-chip" title="Click to view ${name} materials in Dashboard" onclick="navigateToDashboardColor('${name.replace(/'/g, "\\'")}')">
+                                    <div class="color-swatch-circle" style="background-color: ${swatchBg};"></div>
+                                    <span class="color-chip-name">${name}</span>
+                                    ${hex ? `<span class="color-chip-hex">${hex}</span>` : ''}
+                                    <svg class="color-chip-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.navigateToDashboardColor = function(colorName) {
+    window.location.href = `/Dashboard/index.html?search=${encodeURIComponent(colorName)}`;
+};
+
+window.openColorComboModal = function(combo = null) {
+    if (!colorComboModal) return;
+
+    comboColorsList.innerHTML = '';
+
+    if (combo) {
+        comboModalTitle.textContent = 'Edit Color Combo';
+        comboIdInput.value = combo.id;
+        comboTitleInput.value = combo.title || '';
+        const colors = Array.isArray(combo.colors) ? combo.colors : [];
+        if (colors.length === 0) {
+            addComboColorRow();
+        } else {
+            colors.forEach(c => {
+                const name = typeof c === 'string' ? c : (c.name || '');
+                const hex = typeof c === 'string' ? '' : (c.hex || '#4169E1');
+                addComboColorRow(name, hex);
+            });
+        }
+    } else {
+        comboModalTitle.textContent = 'Add New Color Combo';
+        comboIdInput.value = '';
+        comboTitleInput.value = '';
+        addComboColorRow('Red', '#E53935');
+        addComboColorRow('Blue', '#4169E1');
+        addComboColorRow('Gold', '#FFD700');
+    }
+
+    colorComboModal.style.display = 'flex';
+};
+
+window.editColorCombo = function(id) {
+    const combo = allColorCombos.find(c => c.id === id);
+    if (combo) openColorComboModal(combo);
+};
+
+function closeComboModal() {
+    if (colorComboModal) colorComboModal.style.display = 'none';
+}
+
+function addComboColorRow(initialName = '', initialHex = '#4169E1') {
+    if (!comboColorsList) return;
+
+    const row = document.createElement('div');
+    row.className = 'combo-color-row';
+
+    const presetSelect = document.createElement('select');
+    presetSelect.className = 'combo-color-select';
+    presetSelect.innerHTML = PRESET_COLORS.map(p => `<option value="${p.name}" data-hex="${p.hex}">${p.name}</option>`).join('');
+    
+    // Check if initialName matches a preset
+    const matchingPreset = PRESET_COLORS.find(p => p.name.toLowerCase() === initialName.toLowerCase());
+    if (matchingPreset) {
+        presetSelect.value = matchingPreset.name;
+    } else if (initialName) {
+        presetSelect.value = 'Custom...';
+    }
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'combo-color-input';
+    nameInput.placeholder = 'Color name';
+    nameInput.value = initialName || (presetSelect.value !== 'Select preset...' && presetSelect.value !== 'Custom...' ? presetSelect.value : '');
+    nameInput.required = true;
+
+    const colorPicker = document.createElement('input');
+    colorPicker.type = 'color';
+    colorPicker.className = 'combo-color-picker';
+    colorPicker.value = initialHex && initialHex.startsWith('#') ? initialHex : '#4169E1';
+
+    presetSelect.addEventListener('change', () => {
+        const selectedOpt = presetSelect.options[presetSelect.selectedIndex];
+        const hex = selectedOpt.getAttribute('data-hex');
+        if (presetSelect.value !== 'Select preset...' && presetSelect.value !== 'Custom...') {
+            nameInput.value = presetSelect.value;
+            if (hex) colorPicker.value = hex;
+        }
+    });
+
+    colorPicker.addEventListener('input', () => {
+        // If color picker changed, update custom hex if desired
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-color-row-btn';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.title = 'Remove color';
+    removeBtn.addEventListener('click', () => {
+        if (comboColorsList.children.length > 1) {
+            row.remove();
+        } else {
+            showToast.error('A combo must have at least one color');
+        }
+    });
+
+    row.appendChild(presetSelect);
+    row.appendChild(nameInput);
+    row.appendChild(colorPicker);
+    row.appendChild(removeBtn);
+
+    comboColorsList.appendChild(row);
+}
+
+window.deleteColorCombo = async function(id, title) {
+    if (!confirm(`Are you sure you want to delete color combo "${title}"?`)) return;
+    try {
+        const result = await API.deleteColorCombo(id);
+        if (result.error) throw new Error(result.error);
+        showToast.success(`Color combo "${title}" deleted`);
+        loadColorCombos();
+    } catch (err) {
+        showToast.error(err.message || 'Failed to delete color combo');
+    }
+};
+
+if (openAddComboBtn) {
+    openAddComboBtn.addEventListener('click', () => openColorComboModal());
+}
+
+if (closeComboModalBtn) {
+    closeComboModalBtn.addEventListener('click', closeComboModal);
+}
+
+if (cancelComboModalBtn) {
+    cancelComboModalBtn.addEventListener('click', closeComboModal);
+}
+
+if (addComboColorRowBtn) {
+    addComboColorRowBtn.addEventListener('click', () => addComboColorRow());
+}
+
+if (colorComboModal) {
+    colorComboModal.addEventListener('click', (e) => {
+        if (e.target === colorComboModal) closeComboModal();
+    });
+}
+
+if (comboForm) {
+    comboForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = comboIdInput.value;
+        const title = comboTitleInput.value.trim();
+        const colorRows = comboColorsList.querySelectorAll('.combo-color-row');
+        
+        const colors = [];
+        colorRows.forEach(row => {
+            const nameInput = row.querySelector('.combo-color-input');
+            const pickerInput = row.querySelector('.combo-color-picker');
+            const name = nameInput ? nameInput.value.trim() : '';
+            const hex = pickerInput ? pickerInput.value : '';
+            if (name) {
+                colors.push({ name, hex });
+            }
+        });
+
+        if (!title) {
+            showToast.error('Please enter a title for the combo');
+            return;
+        }
+
+        if (colors.length === 0) {
+            showToast.error('Please add at least one valid color');
+            return;
+        }
+
+        const comboData = { title, colors };
+
+        try {
+            let res;
+            if (id) {
+                res = await API.updateColorCombo(id, comboData);
+            } else {
+                res = await API.createColorCombo(comboData);
+            }
+
+            if (res.error) throw new Error(res.error);
+
+            showToast.success(id ? 'Color combo updated!' : 'Color combo created!');
+            closeComboModal();
+            loadColorCombos();
+        } catch (err) {
+            showToast.error(err.message || 'Failed to save color combo');
+        }
+    });
+}
+

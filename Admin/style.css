@@ -283,3 +283,230 @@ body.dark-mode .delete-btn-minimal:hover {
         flex: unset;
     }
 }
+
+/* Color Combos Section Styles */
+.color-combos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.color-combo-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.color-combo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-color: var(--deco-red);
+}
+
+.combo-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.combo-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.combo-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.combo-action-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.combo-action-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    transform: scale(1.05);
+}
+
+.combo-action-btn.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.combo-colors-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.color-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.color-chip:hover {
+    background: var(--card-bg);
+    border-color: var(--deco-red);
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.color-swatch-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 0 2px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.color-chip-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.color-chip-hex {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.color-chip-arrow {
+    color: var(--text-secondary);
+    opacity: 0.5;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.color-chip:hover .color-chip-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+    color: var(--deco-red);
+}
+
+/* Modal Overlay & Form */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.combo-modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.combo-color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-secondary);
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.combo-color-select {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.combo-color-input {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.combo-color-picker {
+    width: 38px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.remove-color-row-btn {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.remove-color-row-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+

@@ -15,6 +15,7 @@ const eventRoutes = require('./routes/events');
 const borrowerRoutes = require('./routes/borrowers');
 const activityLogRoutes = require('./routes/activityLogs');
 const quoteRoutes = require('./routes/quoteRoutes');
+const colorComboRoutes = require('./routes/colorCombos');
 const { db, isPostgres } = require('./database/database');
 
 const app = express();
@@ -74,6 +75,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/borrowers', borrowerRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/quotes', quoteRoutes);
+app.use('/api/color-combos', colorComboRoutes);
 
 // ── Cache helper — sets Cache-Control on public read-only responses ──
 // 120s = browsers/CDN cache the response for 2 minutes
@@ -385,6 +387,35 @@ function ensureChapelLogsTable() {
   });
 }
 
+function ensureColorCombosTable() {
+  const createTableSql = isPostgres 
+    ? `CREATE TABLE IF NOT EXISTS color_combos (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        colors TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )`
+    : `CREATE TABLE IF NOT EXISTS color_combos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        colors TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`;
+
+  return new Promise((resolve, reject) => {
+    db.run(createTableSql, (err) => {
+      if (err) {
+        console.error('❌ Error ensuring color_combos table:', err);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 (async () => {
   try {
     await ensureMaterialsLocationColumn();
@@ -394,6 +425,7 @@ function ensureChapelLogsTable() {
     await ensureAdminsTable();
     await ensureActivityLogsTable();
     await ensureChapelLogsTable();
+    await ensureColorCombosTable();
     await fixCloudinaryImageUrls();
 
     app.listen(PORT, () => {

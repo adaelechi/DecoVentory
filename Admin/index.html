@@ -45,6 +45,12 @@
                         <span class="item-name">Decorations</span>
                     </a>
                 </li>
+                <li>
+                    <a href="#color-combos-section" id="sidebarColorCombosBtn">
+                        <svg class="item-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.71 1.7-1.64 0-.44-.17-.85-.45-1.16-.31-.34-.5-.81-.5-1.32 0-1.1.9-2 2-2h2.24c3.18 0 5.76-2.58 5.76-5.76 0-5.46-4.66-10.12-10.75-10.12z"/><circle cx="13.5" cy="6.5" r="1" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1" fill="currentColor"/><circle cx="8.5" cy="7.5" r="1" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1" fill="currentColor"/></svg>
+                        <span class="item-name">Color Combos</span>
+                    </a>
+                </li>
             </ul>
         </section>
 
@@ -92,6 +98,25 @@
                     </div>
                 </div>
                 <div id="decorations-pagination" class="pagination-container"></div>
+
+                <section id="color-combos-section" style="margin-top: 3rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="margin: 0;">Color Combos</h2>
+                            <p style="color: var(--text-secondary); margin-top: 0.25rem; font-size: 0.9rem;">Manage event color schemes. Click any color to search materials in that color on the Dashboard.</p>
+                        </div>
+                        <button type="button" class="btn-primary" id="openAddComboBtn" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Add Combo
+                        </button>
+                    </div>
+                    <div id="color-combos-container" class="color-combos-grid">
+                        <div class="color-combo-card skeleton-card">
+                            <div class="skeleton skeleton-text h3"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                        </div>
+                    </div>
+                </section>
 
                 <h2 style="margin-top: 3rem; margin-bottom: 1rem;">Recent Activity Logs</h2>
                 <div class="admin-controls-row">
@@ -141,6 +166,38 @@
             </section>
         </section>
     </main>
+
+    <!-- Add/Edit Color Combo Modal -->
+    <div id="colorComboModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content combo-modal-content">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 id="comboModalTitle" style="margin: 0; font-size: 1.25rem;">Add New Color Combo</h3>
+                <button type="button" class="close-modal-btn" id="closeComboModalBtn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <form id="comboForm">
+                <input type="hidden" id="comboIdInput">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="comboTitleInput" style="display: block; margin-bottom: 6px; font-weight: 600;">Combo Title / Name</label>
+                    <input type="text" id="comboTitleInput" placeholder="e.g. Royal Gold & Emerald, Red & Blue Combo" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary);">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Colors in Combo</label>
+                    <div id="comboColorsList" class="combo-colors-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic color item rows -->
+                    </div>
+                    <button type="button" class="btn-secondary" id="addComboColorRowBtn" style="margin-top: 12px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        + Add Color
+                    </button>
+                </div>
+
+                <div class="modal-actions" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn-secondary" id="cancelComboModalBtn">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveComboBtn">Save Combo</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script src="/assets/toast.js"></script>
     <script src="/api.js"></script>
     <script src="main.js"></script>

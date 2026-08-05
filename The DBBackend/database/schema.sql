@@ -117,3 +117,13 @@ CREATE TABLE IF NOT EXISTS quote_requests (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_quote_requests_status ON quote_requests(status);
+
+-- 9. Color Combos Table
+CREATE TABLE IF NOT EXISTS color_combos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    colors TEXT NOT NULL, -- Stored as JSON array of objects [{ name, hex }]
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
