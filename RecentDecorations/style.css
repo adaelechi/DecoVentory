@@ -293,13 +293,26 @@
 .project-date {
     font-weight: 600;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
 }
 
 .project-venue {
     color: var(--text-primary);
     font-size: 1.1rem;
-    margin-bottom: 1rem;
+}
+
+.project-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.1rem;
+}
+
+.project-meta .project-date,
+.project-meta .project-venue {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    white-space: nowrap;
 }
 
 .project-materials ul {
@@ -320,7 +333,7 @@
 }
 
 .project-actions {
-    margin-top: 2rem;
+    margin: 0;
 }
 
 .instagram-btn {
@@ -329,7 +342,7 @@
     gap: 0.6rem;
     background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); 
     color: white !important;
-    padding: 0.8rem 1.5rem;
+    padding: 0.65rem 0.9rem;
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
