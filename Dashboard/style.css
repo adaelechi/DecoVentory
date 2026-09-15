@@ -750,6 +750,41 @@ body.dark-mode #search-input {
     border-radius: 8px;
 }
 
+.resource-state {
+    grid-column: 1 / -1;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 14px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.resource-state h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.resource-state p {
+    margin-bottom: 1rem;
+}
+
+.state-action {
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.state-action:hover {
+    border-color: var(--deco-red);
+    color: var(--deco-red);
+}
+
 /* Dark Mode Styles (Cleaned up as variables handle most things) */
 body.dark-mode .details-btn {
     background-color: var(--deco-red);

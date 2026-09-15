@@ -58,6 +58,53 @@
     margin-top: 1rem;
 }
 
+.gallery-skeleton {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--card-bg);
+}
+
+.gallery-skeleton .skeleton-image {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+}
+
+.gallery-skeleton__details {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    left: 1.25rem;
+}
+
+.gallery-skeleton__details .skeleton {
+    display: block;
+    background: rgba(255, 255, 255, 0.5);
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0.5) 100%);
+}
+
+.gallery-state {
+    grid-column: 1 / -1;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.gallery-state h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.gallery-state p {
+    margin-bottom: 1rem;
+}
+
 .gallery-item {
     position: relative;
     aspect-ratio: 1 / 1;

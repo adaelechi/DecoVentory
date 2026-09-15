@@ -270,10 +270,153 @@
         height: 100%;
     }
 
-    .pagination-container {
+.pagination-container {
         gap: 0.75rem;
         margin: 1.25rem 0;
         padding: 0.5rem 0;
+    }
+}
+
+/* Rental catalogue */
+#inventory-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.inventory-group {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.inventory-group__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.inventory-group__header h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.inventory-group__header span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.inventory-group__items {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.catalog-item {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.75rem;
+}
+
+.catalog-item__image {
+    width: 4.5rem;
+    height: 4.5rem;
+    overflow: hidden;
+    border-radius: 7px;
+    background: var(--deco-red-muted);
+    display: grid;
+    place-items: center;
+    color: var(--deco-red);
+    font-size: 1.25rem;
+}
+
+.catalog-item__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.catalog-item__image--fallback {
+    background: var(--deco-red-muted);
+}
+
+.catalog-item .item-info h4 {
+    margin-bottom: 0.3rem;
+}
+
+.catalog-item__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.6rem;
+    align-items: center;
+    margin-bottom: 0.45rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.catalog-item__meta .price {
+    margin: 0;
+    font-weight: 650;
+    color: var(--text-primary);
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--deco-red-muted);
+    color: var(--deco-red);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stock-badge.out-of-stock {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+.catalog-state {
+    padding: 2rem 1rem;
+    text-align: center;
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    color: var(--text-secondary);
+}
+
+.catalog-state h4 {
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+}
+
+.catalog-state p {
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+}
+
+@media (max-width: 600px) {
+    .catalog-item {
+        grid-template-columns: 4rem minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .catalog-item__image {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .catalog-item .item-controls {
+        grid-column: 1 / -1;
+        margin-top: 0.2rem;
     }
 }
 

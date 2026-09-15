@@ -170,6 +170,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function formatCategoryLabel(category) {
+        const value = String(category || 'Other materials').trim();
+        return value
+            ? value.replace(/[-_]/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase())
+            : 'Other materials';
+    }
+
+    function getMaterialImage(item) {
+        return item.image_url ? getImageUrl(item.image_url) : '';
+    }
+
+    function renderInventoryState(type) {
+        const states = {
+            empty: {
+                title: 'No materials are available yet',
+                message: 'Please check back after materials have been added to the inventory.'
+            },
+            error: {
+                title: 'We could not load the inventory',
+                message: 'Check your connection and try again.'
+            }
+        };
+        const state = states[type];
+        inventoryListEl.innerHTML = `
+            <div class="catalog-state ${type === 'error' ? 'catalog-state--error' : ''}">
+                <h4>${state.title}</h4>
+                <p>${state.message}</p>
+                ${type === 'error' ? '<button type="button" class="reset-btn" data-retry-inventory>Try again</button>' : ''}
+            </div>
+        `;
+        const paginationContainer = document.getElementById('pagination-controls');
+        if (paginationContainer) paginationContainer.innerHTML = '';
+    }
+
     // 3. Fetch Inventory
     async function loadInventory() {
         // 1. Render from cache immediately (feels instant)
@@ -195,7 +229,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Failed to fetch inventory:', error);
             if (!cached) {
-                inventoryListEl.innerHTML = '<p style="color:red">Failed to load inventory. Please ensure the backend is running.</p>';
+                renderInventoryState('error');
             }
             revealPage();
         }
@@ -204,9 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 4. Render Inventory Cards
     function renderInventory() {
         if (inventory.length === 0) {
-            inventoryListEl.innerHTML = '<p>No items found in inventory.</p>';
-            const paginationContainer = document.getElementById('pagination-controls');
-            if (paginationContainer) paginationContainer.innerHTML = '';
+            renderInventoryState('empty');
             return;
         }
 
@@ -221,9 +253,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         const end = start + itemsPerPage;
         const pagedInventory = inventory.slice(start, end);
 
-        inventoryListEl.innerHTML = pagedInventory.map(item => {
+        const groupedInventory = pagedInventory.reduce((groups, item) => {
+            const category = formatCategoryLabel(item.category);
+            if (!groups.has(category)) groups.set(category, []);
+            groups.get(category).push(item);
+            return groups;
+        }, new Map());
+
+        inventoryListEl.innerHTML = [...groupedInventory.entries()].map(([category, items]) => `
+            <section class="inventory-group" aria-label="${category} materials">
+                <div class="inventory-group__header">
+                    <h4>${category}</h4>
+                    <span>${items.length} ${items.length === 1 ? 'item' : 'items'}</span>
+                </div>
+                <div class="inventory-group__items">
+                    ${items.map(renderInventoryCard).join('')}
+                </div>
+            </section>
+        `).join('');
+
+        renderPaginationControls(totalItems, totalPages);
+        attachQuantityListeners();
+    }
+
+    function renderInventoryCard(item) {
             const available = item.available_quantity || 0;
             const isOutOfStock = available <= 0;
+            const image = getMaterialImage(item);
             
             // Initialize cart state if not already set
             if (cart[item.id] === undefined) {
@@ -231,27 +287,34 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             
             return `
-                <div class="inventory-card">
+                <article class="inventory-card catalog-item">
+                    <div class="catalog-item__image">
+                        ${image
+                            ? `<img src="${image}" alt="${item.name}" loading="lazy" decoding="async" onerror="this.closest('.catalog-item__image').classList.add('catalog-item__image--fallback'); this.remove();">`
+                            : '<span aria-hidden="true">✦</span>'}
+                    </div>
                     <div class="item-info">
                         <h4>${item.name}</h4>
-                        ${item.size ? `<p class="size">Size: ${item.size}</p>` : ''}
-                        <p class="price">₦${item.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
-                        <p class="stock ${isOutOfStock ? 'out-of-stock' : ''}">${available} Available</p>
+                        <div class="catalog-item__meta">
+                            ${item.size ? `<span>${item.size}</span>` : ''}
+                            <span class="price">₦${item.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                        </div>
+                        <span class="stock-badge ${isOutOfStock ? 'out-of-stock' : ''}">${isOutOfStock ? 'Out of stock' : `${available} available`}</span>
                     </div>
                     <div class="item-controls">
                         <button type="button" class="qty-btn minus" data-type="inventory" data-id="${item.id}" ${isOutOfStock ? 'disabled' : ''}>-</button>
                         <input type="number" class="qty-input" data-type="inventory" data-id="${item.id}" value="${cart[item.id]}" min="0" max="${available}" ${isOutOfStock ? 'disabled' : ''}>
                         <button type="button" class="qty-btn plus" data-type="inventory" data-id="${item.id}" ${isOutOfStock ? 'disabled' : ''}>+</button>
                     </div>
-                </div>
+                </article>
             `;
-        }).join('');
-
-        renderPaginationControls(totalItems, totalPages);
-        
-        // Attach listeners to newly created buttons
-        attachQuantityListeners();
     }
+
+    inventoryListEl.addEventListener('click', (event) => {
+        if (event.target.closest('[data-retry-inventory]')) {
+            loadInventory();
+        }
+    });
 
     function renderPaginationControls(totalItems, totalPages) {
         const container = document.getElementById('pagination-controls');

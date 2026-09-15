@@ -338,15 +338,53 @@ function applyCurrentFilters(materials = allMaterials) {
     });
 }
 
+function hasActiveResourceFilters() {
+    const hasCategory = categorySelect && categorySelect.value !== 'All Categories';
+    const hasType = statusSelect && statusSelect.value !== 'All Types';
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    return hasCategory || hasType || hasSearch;
+}
+
+function renderResourceState(type) {
+    if (!resourceSection) return;
+
+    const states = {
+        empty: hasActiveResourceFilters()
+            ? {
+                title: 'No materials match those filters',
+                message: 'Try a different search or clear the filters to see all materials.',
+                action: '<button type="button" class="state-action" data-reset-resources>Clear filters</button>'
+            }
+            : {
+                title: 'No materials have been added yet',
+                message: 'Inventory items will appear here once they are available.',
+                action: ''
+            },
+        error: {
+            title: 'We could not load the inventory',
+            message: 'Check your connection and try again.',
+            action: '<button type="button" class="state-action" data-retry-resources>Try again</button>'
+        }
+    };
+    const state = states[type];
+    resourceSection.innerHTML = `
+        <div class="resource-state ${type === 'error' ? 'resource-state--error' : ''}">
+            <h3>${state.title}</h3>
+            <p>${state.message}</p>
+            ${state.action}
+        </div>
+    `;
+    const paginationContainer = document.getElementById('pagination-controls');
+    if (paginationContainer) paginationContainer.innerHTML = '';
+}
+
 function renderResources(materials) {
     if (!resourceSection) {
         return;
     }
 
     if (!materials.length) {
-        resourceSection.innerHTML = '<p class="no-resources">No resources found. Add your first resource!</p>';
-        const paginationContainer = document.getElementById('pagination-controls');
-        if (paginationContainer) paginationContainer.innerHTML = '';
+        renderResourceState('empty');
         return;
     }
 
@@ -802,7 +840,7 @@ async function loadDashboardData(bustCache = false) {
         revealDashboard();
         // Only show error if we had nothing to show from cache
         if (!cached && resourceSection) {
-            resourceSection.innerHTML = `<p class="error-message">Unable to connect to server. Please ensure the backend is running at ${API_BASE_URL}</p>`;
+            renderResourceState('error');
         }
     }
 }
@@ -965,6 +1003,16 @@ if (resetBtn) {
 
 if (resourceSection) {
     resourceSection.addEventListener('click', event => {
+        if (event.target.closest('[data-reset-resources]')) {
+            resetFilters();
+            return;
+        }
+
+        if (event.target.closest('[data-retry-resources]')) {
+            loadDashboardData(true);
+            return;
+        }
+
         const button = event.target.closest('.details-btn');
 
         if (!button || button.disabled) {

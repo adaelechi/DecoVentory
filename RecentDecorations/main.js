@@ -25,8 +25,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getGalleryImageUrl(imageUrl, width, square = false) {
+        const imageUrlWithHost = getImageUrl(imageUrl);
+        if (!imageUrlWithHost || !imageUrlWithHost.includes('res.cloudinary.com')) {
+            return imageUrlWithHost;
+        }
+
+        const transformations = square
+            ? `f_auto,q_auto,w_${width},h_${width},c_fill,g_auto`
+            : `f_auto,q_auto,w_${width}`;
+
+        return imageUrlWithHost.replace('/image/upload/', `/image/upload/${transformations}/`);
+    }
+
+    function renderGallerySkeletons() {
+        galleryGrid.setAttribute('aria-busy', 'true');
+        galleryGrid.innerHTML = Array.from({ length: 6 }, () => `
+            <div class="gallery-skeleton" aria-hidden="true">
+                <div class="skeleton skeleton-image"></div>
+                <div class="gallery-skeleton__details">
+                    <span class="skeleton skeleton-text short"></span>
+                    <span class="skeleton skeleton-text medium"></span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderGalleryState(type) {
+        const states = {
+            empty: {
+                title: 'No decorations have been added yet',
+                message: 'Check back soon to see the Decoration Unit’s latest work.'
+            },
+            error: {
+                title: 'We could not load the decorations',
+                message: 'Check your connection and try again.'
+            }
+        };
+        const state = states[type];
+        galleryGrid.setAttribute('aria-busy', 'false');
+        galleryGrid.innerHTML = `
+            <div class="gallery-state ${type === 'error' ? 'gallery-state--error' : ''}">
+                <h3>${state.title}</h3>
+                <p>${state.message}</p>
+                ${type === 'error' ? '<button type="button" class="reset-btn" data-retry-gallery>Try again</button>' : ''}
+            </div>
+        `;
+    }
+
     // Fetch and render projects
     async function fetchProjects() {
+        renderGallerySkeletons();
         try {
             const response = await fetch(`${API_BASE_URL}/events`);
             if (!response.ok) throw new Error('Failed to fetch projects');
@@ -35,20 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
             revealPage();
         } catch (error) {
             console.error(error);
-            galleryGrid.innerHTML = `<p class="error-message">Failed to load decorations. Please try again later.</p>`;
+            renderGalleryState('error');
             revealPage();
         }
     }
 
     function renderGallery(projects) {
         if (projects.length === 0) {
-            galleryGrid.innerHTML = `<p class="no-resources">No recent decorations found.</p>`;
+            renderGalleryState('empty');
             return;
         }
 
-        galleryGrid.innerHTML = projects.map(project => {
+        galleryGrid.setAttribute('aria-busy', 'false');
+        galleryGrid.innerHTML = projects.map((project, index) => {
             const mainImage = project.images && project.images.length > 0 
-                ? getImageUrl(project.images[0])
+                ? getGalleryImageUrl(project.images[0], 900, true)
                 : '/assets/logo.jpeg'; // Fallback to logo directly
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {
@@ -58,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
                 <div class="gallery-item" onclick="openProjectDetails(${JSON.stringify(project).replace(/"/g, '&quot;')})">
-                    <img src="${mainImage}" alt="${project.event_name}" onerror="this.src='/assets/logo.jpeg'">
+                    <img src="${mainImage}" alt="${project.event_name}" ${index < 3 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.src='/assets/logo.jpeg'">
                     <div class="gallery-overlay">
                         <div class="gallery-info">
                             <p class="date">
@@ -95,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = document.getElementById('nextImage');
 
         if (project.images && project.images.length > 0) {
-            carousel.innerHTML = project.images.map(img => `<img src="${getImageUrl(img)}" alt="${project.event_name}">`).join('');
+            carousel.innerHTML = project.images.map((img, index) => `<img src="${getGalleryImageUrl(img, 1400)}" alt="${project.event_name}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`).join('');
             
             // Show/hide nav buttons
             const hasMultiple = project.images.length > 1;
@@ -193,7 +243,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initial fetch
+    revealPage();
     fetchProjects();
+
+    galleryGrid.addEventListener('click', event => {
+        if (event.target.closest('[data-retry-gallery]')) {
+            fetchProjects();
+        }
+    });
 
     // Theme Toggle (Standardized)
     const toggleTheme = document.querySelector('.toggle-theme');
