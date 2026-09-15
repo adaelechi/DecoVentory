@@ -1,34 +1,37 @@
 :root {
+    /* Decoration Unit's warm, editorial palette */
     --deco-red: #C54344;
+    --deco-red-strong: #A53233;
     --deco-red-muted: #FCE8E8;
+    --deco-gold: #B98A43;
     
     /* Light Mode Variables */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --border-color: #e2e8f0;
-    --card-bg: #ffffff;
-    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --nav-bg: #ffffff;
-    --sidebar-bg: #ffffff;
-    --input-bg: #ffffff;
-    --modal-backdrop: rgba(10, 21, 35, 0.55);
+    --bg-primary: #fffdfb;
+    --bg-secondary: #f8f5f1;
+    --text-primary: #211b1c;
+    --text-secondary: #6b6062;
+    --border-color: #e8dfdb;
+    --card-bg: #fffdfb;
+    --card-shadow: 0 1px 2px rgb(40 23 25 / 0.04), 0 8px 24px rgb(40 23 25 / 0.05);
+    --nav-bg: #fffdfb;
+    --sidebar-bg: #fffdfb;
+    --input-bg: #fffdfb;
+    --modal-backdrop: rgba(31, 20, 22, 0.6);
 }
 
 body.dark-mode {
     /* Dark Mode Variables - Neutral Professional Palette */
-    --bg-primary: #09090b;
-    --bg-secondary: #0c0c0e;
-    --text-primary: #fafafa;
-    --text-secondary: #a1a1aa;
-    --border-color: #27272a;
-    --card-bg: #141417;
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-    --nav-bg: #09090b;
-    --sidebar-bg: #09090b;
-    --input-bg: #18181b;
-    --deco-red-muted: rgba(197, 67, 68, 0.12);
+    --bg-primary: #171113;
+    --bg-secondary: #110d0e;
+    --text-primary: #fff8f6;
+    --text-secondary: #c8babc;
+    --border-color: #342729;
+    --card-bg: #211719;
+    --card-shadow: 0 8px 24px rgb(0 0 0 / 0.28);
+    --nav-bg: #171113;
+    --sidebar-bg: #171113;
+    --input-bg: #211719;
+    --deco-red-muted: rgba(197, 67, 68, 0.16);
     --modal-backdrop: rgba(0, 0, 0, 0.8);
 }
 

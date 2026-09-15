@@ -86,11 +86,11 @@
 }
 
 .toast-error {
-    border-left-color: #C54344;
+    border-left-color: var(--deco-red);
 }
 .toast-error .toast-icon {
-    background-color: #FCE8E8;
-    color: #C54344;
+    background-color: var(--deco-red-muted);
+    color: var(--deco-red);
 }
 
 .toast-info {

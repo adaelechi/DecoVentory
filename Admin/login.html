@@ -134,6 +134,8 @@
     </main>
     <script src="/assets/toast.js"></script>
     <script src="/api.js"></script>
-    <script src="login.js"></script>
+    <!-- This login page is also served at /Admin/login/. Use an absolute path
+         so its handler loads from either URL and prevents native form POSTs. -->
+    <script src="/Admin/login.js"></script>
 </body>
 </html>
