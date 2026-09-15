@@ -25,15 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function getGalleryImageUrl(imageUrl, width, square = false) {
+    function getGalleryImageUrl(imageUrl, width) {
         const imageUrlWithHost = getImageUrl(imageUrl);
         if (!imageUrlWithHost || !imageUrlWithHost.includes('res.cloudinary.com')) {
             return imageUrlWithHost;
         }
 
-        const transformations = square
-            ? `f_auto,q_auto,w_${width},h_${width},c_fill,g_auto`
-            : `f_auto,q_auto,w_${width}`;
+        const transformations = `f_auto,q_auto,w_${width}`;
 
         return imageUrlWithHost.replace('/image/upload/', `/image/upload/${transformations}/`);
     }
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         galleryGrid.setAttribute('aria-busy', 'false');
         galleryGrid.innerHTML = projects.map((project, index) => {
             const mainImage = project.images && project.images.length > 0 
-                ? getGalleryImageUrl(project.images[0], 900, true)
+                ? getGalleryImageUrl(project.images[0], 1200)
                 : '/assets/logo.jpeg'; // Fallback to logo directly
             
             const date = new Date(project.event_date).toLocaleDateString('en-US', {

@@ -107,7 +107,7 @@
 
 .gallery-item {
     position: relative;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     border-radius: 12px;
     cursor: pointer;
@@ -169,13 +169,13 @@
 
 /* Modal Enhancements */
 .project-panel {
-    width: min(95%, 50rem);
+    width: min(95%, 58rem);
 }
 
 .project-content {
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
     margin-top: 1.5rem;
 }
 
@@ -183,7 +183,8 @@
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    height: 400px;
+    aspect-ratio: 4 / 3;
+    background: var(--bg-secondary);
 }
 
 .project-images-carousel {
@@ -201,8 +202,10 @@
 
 .project-images-carousel img {
     flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
     scroll-snap-align: start;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .carousel-nav {
@@ -371,7 +374,8 @@
     }
 
     .project-carousel-wrapper {
-        height: 250px;
+        height: auto;
+        max-height: none;
     }
 
     .project-caption {
