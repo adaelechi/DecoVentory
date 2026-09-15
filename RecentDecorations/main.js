@@ -139,11 +139,49 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Carousel
         const carousel = document.getElementById('projectCarousel');
+        const carouselWrapper = carousel.closest('.project-carousel-wrapper');
+        const projectPanel = document.querySelector('#projectModal .project-panel');
         const prevBtn = document.getElementById('prevImage');
         const nextBtn = document.getElementById('nextImage');
+        const carouselPagination = document.getElementById('carouselPagination');
+
+        carousel.onscroll = null;
+        carouselPagination.onclick = null;
+
+        function setCarouselShape(image) {
+            const isPortrait = image.naturalHeight > image.naturalWidth;
+            carouselWrapper.classList.toggle('is-portrait', isPortrait);
+            carouselWrapper.classList.toggle('is-landscape', !isPortrait);
+            projectPanel.classList.toggle('is-portrait', isPortrait);
+        }
+
+        function setActiveCarouselDot(index) {
+            carouselPagination.querySelectorAll('.carousel-dot').forEach((dot, dotIndex) => {
+                const isActive = dotIndex === index;
+                dot.classList.toggle('is-active', isActive);
+                dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+            });
+        }
+
+        function goToCarouselImage(index) {
+            carousel.scrollTo({ left: carousel.clientWidth * index, behavior: 'smooth' });
+        }
 
         if (project.images && project.images.length > 0) {
             carousel.innerHTML = project.images.map((img, index) => `<img src="${getGalleryImageUrl(img, 1400)}" alt="${project.event_name}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`).join('');
+            carouselPagination.innerHTML = project.images.length > 1
+                ? project.images.map((_, index) => `<button type="button" class="carousel-dot ${index === 0 ? 'is-active' : ''}" data-image-index="${index}" aria-label="Show image ${index + 1} of ${project.images.length}" aria-current="${index === 0 ? 'true' : 'false'}"></button>`).join('')
+                : '';
+
+            const firstImage = carousel.querySelector('img');
+            carouselWrapper.classList.remove('is-portrait', 'is-landscape');
+            projectPanel.classList.remove('is-portrait');
+            const updateCarouselShape = () => setCarouselShape(firstImage);
+            if (firstImage.complete && firstImage.naturalWidth) {
+                updateCarouselShape();
+            } else {
+                firstImage.addEventListener('load', updateCarouselShape, { once: true });
+            }
             
             // Show/hide nav buttons
             const hasMultiple = project.images.length > 1;
@@ -151,13 +189,24 @@ document.addEventListener('DOMContentLoaded', () => {
             nextBtn.style.display = hasMultiple ? 'flex' : 'none';
 
             if (hasMultiple) {
-                prevBtn.onclick = () => carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
-                nextBtn.onclick = () => carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
+                prevBtn.onclick = () => goToCarouselImage(Math.max(0, Math.round(carousel.scrollLeft / carousel.clientWidth) - 1));
+                nextBtn.onclick = () => goToCarouselImage(Math.min(project.images.length - 1, Math.round(carousel.scrollLeft / carousel.clientWidth) + 1));
+                carouselPagination.onclick = event => {
+                    const dot = event.target.closest('[data-image-index]');
+                    if (dot) goToCarouselImage(Number(dot.dataset.imageIndex));
+                };
+                carousel.onscroll = () => {
+                    const activeIndex = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                    setActiveCarouselDot(activeIndex);
+                };
             }
         } else {
             carousel.innerHTML = `<img src="/assets/logo.jpeg" alt="No image available">`;
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
+            carouselPagination.innerHTML = '';
+            carouselWrapper.classList.remove('is-portrait', 'is-landscape');
+            projectPanel.classList.remove('is-portrait');
         }
 
         // Instagram

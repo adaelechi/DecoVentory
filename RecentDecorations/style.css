@@ -169,7 +169,11 @@
 
 /* Modal Enhancements */
 .project-panel {
-    width: min(95%, 58rem);
+    width: min(95%, 42rem);
+}
+
+.project-panel.is-portrait {
+    width: min(95%, 25rem);
 }
 
 .project-content {
@@ -181,10 +185,17 @@
 
 .project-carousel-wrapper {
     position: relative;
+    width: min(100%, 34rem);
+    margin-inline: auto;
     border-radius: 12px;
     overflow: hidden;
     aspect-ratio: 4 / 3;
     background: var(--bg-secondary);
+}
+
+.project-carousel-wrapper.is-portrait {
+    width: min(100%, 18rem);
+    aspect-ratio: 3 / 4;
 }
 
 .project-images-carousel {
@@ -214,8 +225,8 @@
     transform: translateY(-50%);
     background: rgba(255, 255, 255, 0.8);
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     font-size: 24px;
     display: flex;
@@ -234,6 +245,34 @@
 
 .carousel-nav.prev { left: 10px; }
 .carousel-nav.next { right: 10px; }
+
+.carousel-pagination {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 50%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transform: translateX(-50%);
+}
+
+.carousel-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.carousel-dot.is-active {
+    width: 1.35rem;
+    background: var(--deco-red);
+}
 
 .project-caption {
     font-size: 1.1rem;
