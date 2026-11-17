@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 :root {
     /* Decoration Unit's warm, editorial palette */
     --deco-red: #C54344;
@@ -17,6 +19,8 @@
     --sidebar-bg: #fffdfb;
     --input-bg: #fffdfb;
     --modal-backdrop: rgba(31, 20, 22, 0.6);
+    --skeleton-base: #f1ece7;
+    --skeleton-shine: #e8e0d9;
 }
 
 body.dark-mode {
@@ -33,6 +37,8 @@ body.dark-mode {
     --input-bg: #211719;
     --deco-red-muted: rgba(197, 67, 68, 0.16);
     --modal-backdrop: rgba(0, 0, 0, 0.8);
+    --skeleton-base: #241a1c;
+    --skeleton-shine: #33272a;
 }
 
 html {
@@ -45,7 +51,7 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: background-color 0.3s, color 0.3s;
@@ -57,19 +63,14 @@ body {
 }
 
 .skeleton {
-    background: #f6f7f8;
-    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background: var(--skeleton-base);
+    background-image: linear-gradient(to right, var(--skeleton-base) 0%, var(--skeleton-shine) 20%, var(--skeleton-base) 40%, var(--skeleton-base) 100%);
     background-repeat: no-repeat;
     background-size: 800px 104px;
     display: inline-block;
     position: relative;
     animation: shimmer 1.5s linear infinite forwards;
     border-radius: 4px;
-}
-
-body.dark-mode .skeleton {
-    background: #1c1c1e;
-    background-image: linear-gradient(to right, #1c1c1e 0%, #2c2c2e 20%, #1c1c1e 40%, #1c1c1e 100%);
 }
 
 .skeleton-text {
@@ -116,4 +117,23 @@ body.dark-mode .skeleton {
 .loading-opacity {
     opacity: 0;
     pointer-events: none;
+}
+
+/* Form controls don't inherit the page font by default */
+button, input, select, textarea {
+    font-family: inherit;
+}
+
+/* Visible focus for keyboard users only */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--deco-red);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

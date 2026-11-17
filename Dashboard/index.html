@@ -103,91 +103,46 @@
         </section>
 
         <section class="mainbar loading-opacity">
-            <section class="main-section">
-                <h1>Resource Overview</h1>
-                <ul class="content-list">
-                    <li class="content-list-item">
-                        <span class="item-state center grey-text">Total Resources</span>
-                        <span class="numbers center"><span class="skeleton skeleton-stat-value"></span></span>
-                    </li>
-                    <li class="content-list-item">
-                        <span class="item-state center grey-text">Items Available <br> &lpar;In-Store&rpar;</span>
-                        <span class="numbers center"><span class="skeleton skeleton-stat-value"></span></span>
-                    </li>
-                    <li class="content-list-item">
-                        <span class="item-state center grey-text">Items in Chapel</span>
-                        <span class="numbers center"><span class="skeleton skeleton-stat-value"></span></span>
-                    </li>
-                    <li class="content-list-item">
-                        <span class="item-state center grey-text">Items in Other Locations</span>
-                        <span class="numbers center"><span class="skeleton skeleton-stat-value"></span></span>
-                    </li>
-                    <li class="content-list-item">
-                        <span class="item-state center grey-text">Items Rented Out</span>
-                        <span class="numbers center"><span class="skeleton skeleton-stat-value"></span></span>
-                    </li>
-                </ul>
-
-                <div class="mobile-filter-trigger center" id="mobileFilterBtn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                    <span>Filters</span>
+            <section class="main-section shelf-page">
+                <div class="shelf-head">
+                    <h1>Our materials</h1>
+                    <p class="shelf-summary" id="shelfSummary"><span class="skeleton skeleton-text medium"></span></p>
+                    <div class="shelf-tools">
+                        <div class="shelf-tabs" id="shelfTabs" role="tablist" aria-label="Fabric"></div>
+                        <label class="shelf-search">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <input type="search" id="search-input" placeholder="Search colour or fabric" aria-label="Search materials" autocomplete="off">
+                        </label>
+                    </div>
                 </div>
 
-                <div class="filter-backdrop" id="filterBackdrop"></div>
-                <div class="filter-box" id="filterBox">
-                    <div class="filter-header-mobile">
-                        <h3>Filter Resources</h3>
-                        <button type="button" class="close-filter" id="closeFilterBtn">&times;</button>
-                    </div>
-                    <div class="search-box">
-                        <input type="text" id="search-input" placeholder="Search resources...">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    </div>
-                    <select name="select-category" class="filter-select" id="category-select">
-                        <option value="All Categories">All Categories</option>
-                        <option value="Fabrics">Fabrics</option>
-                        <option value="Tools">Tools</option>
-                        <option value="Others">Others</option>
-                    </select>
-                    <select name="select-status" class="filter-select" id="status-select">
-                        <option value="All Types">All Types</option>
-                        <option value="Voile">Voile</option>
-                        <option value="Satin">Satin</option>
-                        <option value="Hand Tools">Hand Tools</option>
-                        <option value="Equipment">Equipment</option>
-                        <option value="Miscellaneous">Miscellaneous</option>
-                    </select>
-                    <button class="apply-btn" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="filter-icon"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                        <span>Apply</span>
-                    </button>
-                    <button class="reset-btn" type="button">Reset</button>
-                </div>
-
-                <div class="resource-section">
-                    <div class="resource-card">
-                        <div class="skeleton skeleton-image"></div>
-                        <div class="skeleton skeleton-text h3"></div>
-                        <div class="skeleton skeleton-text medium"></div>
-                        <div class="skeleton skeleton-text short"></div>
-                    </div>
-                    <div class="resource-card">
-                        <div class="skeleton skeleton-image"></div>
-                        <div class="skeleton skeleton-text h3"></div>
-                        <div class="skeleton skeleton-text medium"></div>
-                        <div class="skeleton skeleton-text short"></div>
-                    </div>
-                    <div class="resource-card">
-                        <div class="skeleton skeleton-image"></div>
-                        <div class="skeleton skeleton-text h3"></div>
-                        <div class="skeleton skeleton-text medium"></div>
-                        <div class="skeleton skeleton-text short"></div>
-                    </div>
-                    <div class="resource-card">
-                        <div class="skeleton skeleton-image"></div>
-                        <div class="skeleton skeleton-text h3"></div>
-                        <div class="skeleton skeleton-text medium"></div>
-                        <div class="skeleton skeleton-text short"></div>
+                <div class="shelf" id="shelf">
+                    <div class="shelf-grid">
+                        <div class="shelf-item shelf-item--loading">
+                            <div class="shelf-item__photo skeleton"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                        <div class="shelf-item shelf-item--loading">
+                            <div class="shelf-item__photo skeleton"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                        <div class="shelf-item shelf-item--loading">
+                            <div class="shelf-item__photo skeleton"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                        <div class="shelf-item shelf-item--loading">
+                            <div class="shelf-item__photo skeleton"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
+                        <div class="shelf-item shelf-item--loading">
+                            <div class="shelf-item__photo skeleton"></div>
+                            <div class="skeleton skeleton-text medium"></div>
+                            <div class="skeleton skeleton-text short"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -250,7 +205,7 @@
                     </div>
                     <div class="form-group">
                         <label for="detailsTotalQuantity">Total Quantity</label>
-                        <input type="number" id="detailsTotalQuantity" min="0" readonly style="background-color: #f5f5f5; cursor: not-allowed;" required>
+                        <input type="number" id="detailsTotalQuantity" min="0" readonly class="is-readonly" required>
                     </div>
                     <div class="form-group">
                         <label for="detailsAvailableQuantity">Available Quantity</label>
@@ -275,7 +230,7 @@
                     </div>
                     <div class="form-group details-image-group" style="grid-column: 1 / -1;">
                         <label for="detailsImage">Replace Image</label>
-                        <input type="file" id="detailsImage" accept=".jpg,.jpeg,.png,.webp" style="width: 100%; border: 1px dashed #d2d2d7; padding: 0.5rem; background: #fafafa; border-radius: 8px;">
+                        <input type="file" id="detailsImage" accept=".jpg,.jpeg,.png,.webp" class="file-input">
                     </div>
                 </div>
                 <p class="details-message" id="detailsMessage"></p>
