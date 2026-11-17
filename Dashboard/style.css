@@ -413,15 +413,11 @@ a:any-link {
     outline: none;
     font-size: 1rem;
     font-family: inherit;
-    color: #333;
-}
-
-body.dark-mode #search-input {
-    color: #e0e0e0;
+    color: var(--text-primary);
 }
 
 .search-icon {
-    color: #666;
+    color: var(--text-secondary);
     width: 20px;
     height: 20px;
 }
@@ -731,7 +727,7 @@ body.dark-mode #search-input {
 }
 
 .resource-card .date {
-    color: #999;
+    color: var(--text-secondary);
     margin-top: 1rem;
 }
 
@@ -1435,4 +1431,456 @@ body.dark-mode .input-group label {
 
 .logout-link:hover {
     background: rgba(197, 67, 68, 0.12);
+}
+
+/* Theme-aware read-only and file inputs (were hard-coded light grey) */
+input.is-readonly {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.file-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Top menu bar (desktop): the sidebar sits in the header as a row of links.
+   Phones and tablets keep the bottom bar from the rules above.
+   ========================================================================== */
+@media (min-width: 1025px) {
+    body main {
+        grid-template-areas: "mainbar";
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    body .sidebar {
+        position: fixed;
+        top: 0;
+        left: 17rem;
+        right: auto;
+        bottom: auto;
+        z-index: 101;
+        width: auto;
+        height: 3.5rem;
+        padding: 0;
+        display: flex;
+        align-items: stretch;
+        gap: 1.75rem;
+        background: transparent;
+        border: none;
+    }
+
+    body .sidebar .sidebar_list {
+        display: flex;
+        gap: 1.75rem;
+        margin: 0;
+    }
+
+    body .sidebar .sidebar_list li,
+    body .sidebar .sidebar_list li:last-child {
+        width: auto;
+        height: 3.5rem;
+        margin: 0;
+        border: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    body .sidebar .sidebar_list li a {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    body .sidebar .item-svg {
+        display: none;
+    }
+
+    body .sidebar .item-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        transition: color 0.2s ease;
+    }
+
+    body .sidebar .sidebar_list li:hover,
+    body .sidebar .logout-link:hover,
+    body .sidebar .settings:hover {
+        background: transparent;
+    }
+
+    body .sidebar .sidebar_list li:hover .item-name,
+    body .sidebar .settings:hover .item-name {
+        color: var(--text-primary);
+    }
+
+    body .sidebar .sidebar_list li.active {
+        border-bottom-color: var(--deco-red);
+    }
+
+    body .sidebar .sidebar_list li.active .item-name {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    body .sidebar .sidebar-footer {
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.75rem;
+    }
+
+    body .sidebar .logout-link,
+    body .sidebar .settings {
+        height: 3.5rem;
+        padding: 0;
+        border-radius: 0;
+    }
+}
+
+/* Keep the header from crowding on small laptops: Add button shows its icon only */
+@media (min-width: 1025px) and (max-width: 1240px) {
+    .add-item {
+        display: none;
+    }
+
+    .add-btn {
+        padding: 0 0.7rem;
+    }
+}
+
+/* ==========================================================================
+   Dashboard: shop-shelf layout, materials grouped by fabric
+   ========================================================================== */
+.main-section.shelf-page {
+    padding: 0;
+    min-height: calc(100vh - 3.5rem);
+    background-color: var(--bg-primary);
+}
+
+.shelf-head {
+    padding: 2.75rem 3rem 0;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.shelf-page .shelf-head h1 {
+    margin: 0;
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.shelf-summary {
+    min-height: 1.5rem;
+    margin: 0.6rem 0 1.75rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.shelf-summary .skeleton-text {
+    width: 22rem;
+    max-width: 100%;
+}
+
+.shelf-tools {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.shelf-tabs {
+    display: flex;
+    gap: 1.75rem;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.shelf-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.shelf-tab {
+    flex: none;
+    padding: 0 0 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--text-secondary);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.shelf-tab:hover {
+    color: var(--text-primary);
+}
+
+.shelf-tab.is-active {
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom-color: var(--deco-red);
+}
+
+.shelf-tab__count {
+    margin-left: 0.2rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.shelf-search {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 20rem;
+    max-width: 100%;
+    height: 2.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+}
+
+.shelf-search:focus-within {
+    border-color: var(--text-secondary);
+}
+
+.shelf-search #search-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.shelf-search #search-input:focus-visible {
+    outline: none;
+}
+
+.shelf {
+    padding: 2.25rem 3rem 1rem;
+}
+
+.shelf-group + .shelf-group {
+    margin-top: 2.75rem;
+}
+
+.shelf-group__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.shelf-group__head h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.shelf-group__head h2 span {
+    margin-left: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--text-secondary);
+}
+
+.shelf-link {
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+    color: var(--deco-red);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.shelf-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.shelf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+    gap: 2.25rem 1.5rem;
+}
+
+.shelf-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.shelf-item__photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 0.55rem;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: var(--bg-secondary);
+}
+
+.shelf-item__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shelf-item__photo img.is-fallback {
+    object-fit: contain;
+    padding: 25%;
+    opacity: 0.35;
+}
+
+.shelf-item__name {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-primary);
+}
+
+.shelf-item__line,
+.shelf-item__note {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.shelf-item__line .is-out {
+    color: var(--deco-red);
+    font-weight: 600;
+}
+
+.shelf-item .shelf-item__edit,
+body.dark-mode .shelf-item .shelf-item__edit {
+    flex: none;
+    align-self: flex-start;
+    margin-top: 0.35rem;
+    padding: 0.25rem 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    color: var(--deco-red);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.shelf-item .shelf-item__edit:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.shelf-item--loading .skeleton-text {
+    margin-top: 0.4rem;
+}
+
+.shelf .resource-state {
+    margin: 1rem 0;
+}
+
+.shelf-page .pagination-container {
+    margin: 2.5rem 0 3rem;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .shelf-head {
+        padding: 2rem 2rem 0;
+    }
+
+    .shelf {
+        padding: 2rem 2rem 1rem;
+    }
+}
+
+/* Phone */
+@media (max-width: 600px) {
+    .shelf-head {
+        padding: 1.5rem 1rem 0;
+    }
+
+    .shelf-page .shelf-head h1 {
+        font-size: 1.6rem;
+    }
+
+    .shelf-summary {
+        margin-bottom: 1.25rem;
+        font-size: 0.88rem;
+    }
+
+    .shelf-tools {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 1.1rem;
+    }
+
+    .shelf-search {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .shelf-tab {
+        padding-bottom: 0.85rem;
+    }
+
+    .shelf {
+        padding: 1.5rem 1rem 1rem;
+    }
+
+    .shelf-group + .shelf-group {
+        margin-top: 2.25rem;
+    }
+
+    .shelf-group__head h2 {
+        font-size: 1.15rem;
+    }
+
+    .shelf-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.75rem 0.9rem;
+    }
+
+    .shelf-item__name {
+        font-size: 0.85rem;
+    }
+}
+
+/* The Add button had a fixed width sized for the old font; let it fit its text */
+@media (min-width: 601px) {
+    body .add-btn {
+        width: auto;
+        padding: 0 1rem 0 0.25rem;
+    }
+
+    body .add-item {
+        white-space: nowrap;
+    }
 }

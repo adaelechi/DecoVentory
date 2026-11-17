@@ -6,7 +6,7 @@ const resetBtn = document.querySelector('.reset-btn');
 const categorySelect = document.getElementById('category-select');
 const statusSelect = document.getElementById('status-select');
 const searchInput = document.getElementById('search-input');
-const resourceSection = document.querySelector('.resource-section');
+const resourceSection = document.getElementById('shelf') || document.querySelector('.resource-section');
 const addResourceLink = document.getElementById('addResourceLink');
 const detailsModal = document.getElementById('detailsModal');
 const detailsForm = document.getElementById('detailsForm');
@@ -32,6 +32,7 @@ const cancelDetailsUpdate = document.getElementById('cancelDetailsUpdate');
 let allMaterials = [];
 let selectedMaterial = null;
 let currentPage = 1;
+let activeTab = 'all';
 const itemsPerPage = 20;
 
 const welcomeModal = document.getElementById('welcomeModal');
@@ -305,24 +306,88 @@ function getDashboardStats(materials) {
     };
 }
 
+function joinPhrases(parts) {
+    if (parts.length <= 1) return parts.join('');
+    return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+}
+
 function updateDashboardNumbers(materials) {
     const stats = getDashboardStats(materials);
-    const numberElements = document.querySelectorAll('.numbers');
+    const summary = document.getElementById('shelfSummary');
 
-    if (numberElements[0]) numberElements[0].textContent = stats.totalResources;
-    if (numberElements[1]) numberElements[1].textContent = stats.totalInStore;
-    if (numberElements[2]) numberElements[2].textContent = stats.inChapel;
-    if (numberElements[3]) numberElements[3].textContent = stats.inCustomLocations;
-    if (numberElements[4]) numberElements[4].textContent = stats.rentedOut;
+    if (summary) {
+        const others = [
+            [stats.inChapel, 'in the chapel'],
+            [stats.inCustomLocations, 'at other locations'],
+            [stats.rentedOut, 'rented out']
+        ].filter(([n]) => n > 0).map(([n, label]) => `${n.toLocaleString()} ${label}`);
+
+        const storePhrase = `${stats.totalInStore.toLocaleString()} ${stats.totalInStore === 1 ? 'piece' : 'pieces'} in the office store`;
+        summary.textContent = others.length
+            ? `${joinPhrases([storePhrase, ...others])}.`
+            : `${storePhrase}. None in the chapel or out on rent right now.`;
+    }
+
+    renderTabs(materials);
+}
+
+// Fabric / category key used for tabs and grouping, e.g. 'voile', 'satin', 'decorations'
+function getFabricKey(material) {
+    return getMaterialCategoryInfo(material.category).subtype || 'others';
+}
+
+function getFabricLabel(key) {
+    return toTitleCase(String(key).replace(/-/g, ' '));
+}
+
+const FABRIC_ORDER = ['voile', 'satin'];
+
+function getFabricGroups(materials) {
+    const groups = new Map();
+    materials.forEach(material => {
+        const key = getFabricKey(material);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(material);
+    });
+
+    return [...groups.entries()]
+        .map(([key, items]) => ({ key, label: getFabricLabel(key), items }))
+        .sort((a, b) => {
+            const ai = FABRIC_ORDER.indexOf(a.key);
+            const bi = FABRIC_ORDER.indexOf(b.key);
+            if (ai !== -1 || bi !== -1) return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+            return b.items.length - a.items.length;
+        });
+}
+
+function renderTabs(materials = allMaterials) {
+    const tabsEl = document.getElementById('shelfTabs');
+    if (!tabsEl) return;
+
+    const tabs = [{ key: 'all', label: 'All', count: materials.length }]
+        .concat(getFabricGroups(materials).map(group => ({ key: group.key, label: group.label, count: group.items.length })));
+
+    if (!tabs.some(tab => tab.key === activeTab)) activeTab = 'all';
+
+    tabsEl.innerHTML = tabs.map(tab => `
+        <button type="button" role="tab" class="shelf-tab${tab.key === activeTab ? ' is-active' : ''}" data-tab="${escapeHtml(tab.key)}" aria-selected="${tab.key === activeTab}">
+            ${escapeHtml(tab.label)} <span class="shelf-tab__count">${tab.count}</span>
+        </button>
+    `).join('');
+}
+
+function setActiveTab(key) {
+    activeTab = key;
+    currentPage = 1;
+    renderTabs();
+    renderResources(applyCurrentFilters());
 }
 
 function applyCurrentFilters(materials = allMaterials) {
-    const selectedCategory = categorySelect ? categorySelect.value : 'All Categories';
-    const selectedType = statusSelect ? statusSelect.value : 'All Types';
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
     return materials.filter(material => {
-        const matchesFilters = matchesCategoryFilter(material, selectedCategory, selectedType);
+        const matchesFilters = activeTab === 'all' || getFabricKey(material) === activeTab;
         
         if (!searchTerm) return matchesFilters;
 
@@ -339,10 +404,8 @@ function applyCurrentFilters(materials = allMaterials) {
 }
 
 function hasActiveResourceFilters() {
-    const hasCategory = categorySelect && categorySelect.value !== 'All Categories';
-    const hasType = statusSelect && statusSelect.value !== 'All Types';
     const hasSearch = searchInput && searchInput.value.trim() !== '';
-    return hasCategory || hasType || hasSearch;
+    return activeTab !== 'all' || hasSearch;
 }
 
 function renderResourceState(type) {
@@ -378,6 +441,45 @@ function renderResourceState(type) {
     if (paginationContainer) paginationContainer.innerHTML = '';
 }
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderShelfItem(material, canEditDetails) {
+    const name = escapeHtml(material.name);
+    const available = Number(material.available_quantity || 0);
+    const size = toTitleCase(material.size);
+    const stock = available > 0 ? `${available} available` : 'None available';
+
+    const locations = material.locations && material.locations.length > 0
+        ? material.locations.map(loc => ({ label: formatLocationLabel(loc.name), qty: loc.quantity }))
+        : [{ label: formatLocationLabel(material.location), qty: null }];
+    const awayFromStore = locations.some(loc => loc.label !== 'Office Store');
+    const condition = toTitleCase(material.condition);
+    const notes = [];
+    if (awayFromStore) notes.push(locations.map(loc => loc.qty !== null ? `${loc.label} (${loc.qty})` : loc.label).join(', '));
+    if (condition && condition !== 'Good') notes.push(`Condition: ${condition}`);
+
+    return `
+        <article class="shelf-item">
+            <div class="shelf-item__photo">
+                <img src="${material.image_url ? escapeHtml(getImageUrl(material.image_url)) : '/assets/logo.jpeg'}" alt="${name}" loading="lazy" decoding="async"${material.image_url ? '' : ' class="is-fallback"'} onerror="this.onerror=null;this.src='/assets/logo.jpeg';this.classList.add('is-fallback')">
+            </div>
+            <h3 class="shelf-item__name">${name}</h3>
+            <p class="shelf-item__line">${size ? `${escapeHtml(size)} · ` : ''}<span class="${available > 0 ? '' : 'is-out'}">${stock}</span></p>
+            ${notes.length ? `<p class="shelf-item__note">${escapeHtml(notes.join(' · '))}</p>` : ''}
+            ${canEditDetails ? `<button type="button" class="details-btn shelf-item__edit" data-material-id="${escapeHtml(material.id)}">Update details</button>` : ''}
+        </article>
+    `;
+}
+
+const GROUP_PREVIEW_COUNT = 10;
+
 function renderResources(materials) {
     if (!resourceSection) {
         return;
@@ -388,41 +490,45 @@ function renderResources(materials) {
         return;
     }
 
-    // Pagination Logic
+    const canEditDetails = Boolean(authToken) && userRole !== 'viewer';
+    const searching = searchInput && searchInput.value.trim() !== '';
+
+    // "All": one section per fabric, like a fabric wall
+    if (activeTab === 'all') {
+        resourceSection.innerHTML = getFabricGroups(materials).map(group => {
+            const shown = searching ? group.items : group.items.slice(0, GROUP_PREVIEW_COUNT);
+            const more = group.items.length > shown.length;
+            return `
+                <section class="shelf-group">
+                    <div class="shelf-group__head">
+                        <h2>${escapeHtml(group.label)} <span>${group.items.length} ${group.items.length === 1 ? 'material' : 'materials'}</span></h2>
+                        ${more ? `<button type="button" class="shelf-link" data-tab="${escapeHtml(group.key)}">See all ${escapeHtml(group.label.toLowerCase())}</button>` : ''}
+                    </div>
+                    <div class="shelf-grid">
+                        ${shown.map(material => renderShelfItem(material, canEditDetails)).join('')}
+                    </div>
+                </section>
+            `;
+        }).join('');
+
+        renderPaginationControls(0, 1);
+        return;
+    }
+
+    // One fabric: a single paged grid
     const totalItems = materials.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
-    // Safety check for currentPage
     if (currentPage > totalPages) currentPage = totalPages || 1;
     if (currentPage < 1) currentPage = 1;
-    
+
     const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    const pagedMaterials = materials.slice(start, end);
+    const pagedMaterials = materials.slice(start, start + itemsPerPage);
 
-    const canEditDetails = Boolean(authToken) && userRole !== 'viewer';
-
-    resourceSection.innerHTML = pagedMaterials.map(material => `
-        <div class="resource-card">
-            ${material.image_url ? `<img src="${getImageUrl(material.image_url)}" alt="${material.name}" class="resource-image" onerror="this.src='/assets/logo.jpeg'">` : '<div class="no-image">📦</div>'}
-            <h3>${material.name}</h3>
-            <p><strong>Category:</strong> ${material.category}</p>
-            ${material.size ? `<p><strong>Size:</strong> ${material.size}</p>` : ''}
-            ${material.colour ? `<p><strong>Colour:</strong> ${material.colour}</p>` : ''}
-            <p><strong>Available:</strong> ${material.available_quantity} / ${material.total_quantity}</p>
-            <p><strong>Condition:</strong> ${material.condition}</p>
-            ${material.locations && material.locations.length > 0 
-                ? `<span class="resource-location" style="display: block; margin-top: 5px;"><strong>Locations:</strong> ${material.locations.map(loc => `${formatLocationLabel(loc.name)} (${loc.quantity})`).join(', ')}</span>`
-                : `<span class="resource-location" style="display: block; margin-top: 5px;"><strong>Location:</strong> ${formatLocationLabel(material.location)}</span>`
-            }
-            <p class="date"><small>Added: ${new Date(material.created_at).toLocaleDateString()}</small></p>
-            ${canEditDetails ? `
-            <div class="resource-card-actions">
-                <button type="button" class="details-btn" data-material-id="${material.id}">Update Details</button>
-            </div>
-            ` : ''}
+    resourceSection.innerHTML = `
+        <div class="shelf-grid">
+            ${pagedMaterials.map(material => renderShelfItem(material, canEditDetails)).join('')}
         </div>
-    `).join('');
+    `;
 
     renderPaginationControls(totalItems, totalPages);
 }
@@ -486,8 +592,7 @@ function populateDetailsForm(material) {
     if (detailsAvailableQuantity) {
         detailsAvailableQuantity.value = material.available_quantity;
         detailsAvailableQuantity.readOnly = true;
-        detailsAvailableQuantity.style.backgroundColor = '#f5f5f5';
-        detailsAvailableQuantity.style.cursor = 'not-allowed';
+        detailsAvailableQuantity.classList.add('is-readonly');
     }
     if (detailsCondition) detailsCondition.value = material.condition || 'Good';
     if (detailsSize) detailsSize.value = material.size || '';
@@ -863,7 +968,28 @@ function resetFilters() {
         searchInput.value = '';
     }
 
+    activeTab = 'all';
+    currentPage = 1;
+    renderTabs();
     renderResources(allMaterials);
+}
+
+const shelfTabsEl = document.getElementById('shelfTabs');
+if (shelfTabsEl) {
+    shelfTabsEl.addEventListener('click', event => {
+        const tab = event.target.closest('[data-tab]');
+        if (tab && tab.dataset.tab !== activeTab) setActiveTab(tab.dataset.tab);
+    });
+}
+
+if (resourceSection) {
+    resourceSection.addEventListener('click', event => {
+        const link = event.target.closest('.shelf-link[data-tab]');
+        if (!link) return;
+        setActiveTab(link.dataset.tab);
+        const head = document.querySelector('.shelf-head');
+        if (head) window.scrollTo({ top: head.getBoundingClientRect().top + window.scrollY - 64, behavior: 'smooth' });
+    });
 }
 
 // Wire up all admin-link elements (desktop sidebar-footer + tablet nav)
